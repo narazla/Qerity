@@ -264,15 +264,13 @@ The list is a limited snapshot. The input should match an application name or co
 
 ## Meet the Team
 
-<!-- TODO: replace the photo placeholders below with real photos before submission. Upload them to Google Drive with "Anyone with the link" access, then replace the link IDs in src -->
-
 <br>
 <div align="left">
   <h2>Meet the Team</h2>
   <p>The people behind Qerity</p>
 </div>
 
-<a href="#"><img width="144px" height="180px" src="PLACEHOLDER_LINK_1" alt=""/></a> | <a href="#"><img width="144px" height="180px" src="PLACEHOLDER_LINK_2" alt=""/></a> | <a href="#"><img width="144px" height="180px" src="PLACEHOLDER_LINK_3" alt=""/></a> |
+<a href="#"><img width="144px" height="180px" src="https://drive.google.com/uc?export=view&id=17JzgCaF45gCTXnlIglXVKpq05sTQq5Vx" alt=""/></a> | <a href="#"><img width="144px" height="180px" src="https://drive.google.com/uc?export=view&id=1m_6xGOwyi8lrIhjr2Q3pqw9OhHdjtyOq" alt=""/></a> | <a href="#"><img width="144px" height="180px" src="https://drive.google.com/uc?export=view&id=1kbe9CbYZBaLMgQ-PSwiz179-lZVjKZ9v" alt=""/></a> |
 | --- | --- | --- |
 | <div align="left"><h3><b>Muhammad Aris Maulana</b></h3></div> | <div align="left"><h3><b>Nazla Azzahra Hermana</b></h3></div> | <div align="left"><h3><b>Ladya Kalascha</b></h3></div> |
 
