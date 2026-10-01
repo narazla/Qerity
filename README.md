@@ -1,9 +1,9 @@
 <div align="center">
-    <img src="https://drive.google.com/uc?export=view&id=1PvaRARmRHdVh7cIkODWpcSwSu-7WDbLa" alt="Qerity logo" width="120"/>
+<img src="https://drive.google.com/uc?export=view&id=1PvaRARmRHdVh7cIkODWpcSwSu-7WDbLa" alt="Qerity logo" width="120"/>
 
-    <h3>Qerity</h3>
+### Qerity
 
-    <em>Verify before you trust.</em>
+*Verify before you trust.*
 </div>
 
 <br>
