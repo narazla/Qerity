@@ -4,9 +4,9 @@
 
 **Check first, before you trust**
 
-## Disclaimer
-
-> **Disclaimer:** Qerity is an early screening aid, not legal evidence and not proof that content is fraudulent. All analysis results must be verified through official OJK channels and manual review. Qerity does not replace official verification.
+![Platform](https://img.shields.io/badge/platform-React%20Native%20Expo-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-hackathon%20PoC-orange)
 
 ## Overview
 
@@ -14,47 +14,47 @@ Qerity is a React Native and Expo mobile application that helps people perform a
 
 The application combines lightweight on-device image forensics with a lender-name check against a bundled snapshot of OJK-listed legal entities. Results are signals for review, not final determinations.
 
-## Core Features
+## 🔍 Core Features
 
 ### EXIF metadata check
 
-Qerity checks the EXIF metadata available in the image. Empty metadata or a missing `Software` field is treated as neutral because screenshots and images re-sent through messaging or social media apps often lose EXIF. A populated `Software` field, including nested locations such as `TIFF.Software` or `Exif.Software`, is shown as a signal that deserves review.
+Qerity checks the EXIF metadata available in the image. Empty metadata or a missing `Software` field is **treated as neutral** because screenshots and images re-sent through messaging or social media apps often lose EXIF. A populated `Software` field, including nested locations such as `TIFF.Software` or `Exif.Software`, is shown as a signal that deserves review.
 
-The presence of EXIF is not treated as evidence that an image came directly from a camera or was never edited.
+The presence of EXIF is **not treated as evidence** that an image came directly from a camera or was never edited.
 
 ### Error Level Analysis (ELA)
 
-ELA runs in a WebView using the Canvas API. The application calculates the average compression difference (`avgDiff`) and the percentage of pixels that exceed a difference threshold. Images with a longest side above 1600 pixels are resized before analysis to reduce the risk of WebView failure on large images.
+ELA runs in a WebView using the Canvas API. The application calculates the average compression difference (`avgDiff`) and the **percentage of pixels** that exceed a difference threshold. Images with a longest side above **1600 pixels** are resized before analysis to reduce the risk of WebView failure on large images.
 
-ELA has a 12-second timeout. If the WebView fails to return a result, the check is shown as `error` rather than as a result with no signal.
+ELA has a **12-second timeout**. If the WebView fails to return a result, the check is shown as `error` rather than as a result with no signal.
 
 ### Duplicate/similarity detection
 
-Qerity calculates a 64-bit perceptual dHash in the WebView and compares it using Hamming distance. A distance of up to 10 bits is treated as a similar or duplicate image using a heuristic that can be recalibrated.
+Qerity calculates a **64-bit perceptual dHash** in the WebView and compares it using **Hamming distance**. A distance of up to **10 bits** is treated as a similar or duplicate image using a heuristic that can be recalibrated.
 
 The comparison sources are:
 
 - Previous scan hash history stored in AsyncStorage on the user's device.
 - The bundled example scam dataset in `data/knownScamHashes.js`.
 
-Saving a hash to history is optional. Not finding a match is not evidence that the image is genuine or unique.
+Saving a hash to history is optional. **Not finding a match is not evidence that the image is genuine** or unique.
 
 ### OJK legality matching
 
 The lender name is normalized and checked against the `app` and `company` fields in the bundled OJK list:
 
-- `legal`: exact name match after normalization.
-- `similar`: sufficiently close name based on Levenshtein distance with a limit proportional to string length.
-- `not_found`: no match found.
+- `legal`: **exact name match** after normalization.
+- `similar`: **sufficiently close name** based on Levenshtein distance with a limit proportional to string length.
+- `not_found`: **no match found**.
 - `skipped`: the user did not enter a lender name.
 
-Inputs that are too short are rejected to reduce false matches. Legality results must still be verified through official OJK channels.
+Inputs that are **too short are rejected** to reduce false matches. Legality results must still be verified through official OJK channels.
 
 ### Out of scope for this version
 
 AI-generated image detection and tensor-train/quantum-inspired compression models are **not implemented** in this version's analysis flow. Both are roadmap/future work, not running PoC features.
 
-## Tech Stack
+## ⚙️ Tech Stack
 
 | Layer | Technology |
 | --- | --- |
@@ -68,7 +68,7 @@ AI-generated image detection and tensor-train/quantum-inspired compression model
 | Application entry point | `index.js` with Expo's `registerRootComponent` |
 | Package manager | npm, based on `package-lock.json` |
 
-## Repository Structure
+## 📁 Repository Structure
 
 ```text
 qerity/
@@ -93,7 +93,7 @@ qerity/
     └── checkLegality.js            # Normalization and lender-name matching against the OJK list
 ```
 
-## Local Setup
+## 🚀 Local Setup
 
 ### Prerequisites
 
@@ -232,28 +232,28 @@ npx expo start -c
 
 The list is a limited snapshot. The input should match an application name or company name listed in the snapshot. Verify the result directly through official OJK channels.
 
-## Known Limitations
+## ⚠️ Known Limitations
 
-- The OJK list is a July 2026 snapshot from a secondary source, not data fetched in real time from `ojk.go.id`.
-- ELA is less effective for PNG images and images that have been screenshotted or compressed repeatedly.
-- The duplicate detection database is limited. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
-- AI-generated image detection is not implemented and is on the roadmap.
-- Quantum-inspired or tensor-train compression is not implemented and is on the roadmap.
-- All analysis results are probabilistic signals, not certainty.
-- ELA and duplicate matching thresholds are heuristics and require calibration with real test data.
-- The OJK legality snapshot can change; new entities, revoked entities, or renamed entities are not automatically reflected.
+- The OJK list is a **July 2026 snapshot** from a secondary source, not data fetched in real time from `ojk.go.id`.
+- ELA is **less effective for PNG images** and images that have been screenshotted or compressed repeatedly.
+- The **duplicate detection database is limited**. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
+- **AI-generated image detection is not implemented** and is on the roadmap.
+- **Quantum-inspired or tensor-train compression is not implemented** and is on the roadmap.
+- All analysis results are **probabilistic signals**, not certainty.
+- ELA and duplicate matching thresholds are **heuristics** and require calibration with real test data.
+- The **OJK legality snapshot can change**; new entities, revoked entities, or renamed entities are not automatically reflected.
 
-## Roadmap / Future Work
+## 🗺️ Roadmap / Future Work
 
-- Add AI-generated image detection using a validated pretrained model.
-- Add quantum-inspired or tensor-train model compression for lighter on-device processing.
-- Add direct sharing integration from WhatsApp.
-- Automatically update the OJK list from an official source.
-- Populate and curate the scam hash database using verified examples.
-- Calibrate ELA and Hamming distance thresholds using a documented test dataset.
-- Add reproducible EAS configuration and a standalone APK pipeline.
+- Add **AI-generated image detection** using a validated pretrained model.
+- Add **quantum-inspired or tensor-train model compression** for lighter on-device processing.
+- Add **direct sharing integration from WhatsApp**.
+- **Automatically update the OJK list** from an official source.
+- **Populate and curate the scam hash database** using verified examples.
+- **Calibrate ELA and Hamming distance thresholds** using a documented test dataset.
+- Add **reproducible EAS configuration** and a standalone APK pipeline.
 
-## Security & Privacy
+## 🔒 Security & Privacy
 
 - Qerity does not send scanned images to an application server. Images are processed temporarily on the device, including through the local WebView for ELA and dHash.
 - EXIF metadata is processed locally for the result-screen check.
