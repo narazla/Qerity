@@ -1,8 +1,17 @@
-<!-- TODO: add an app screenshot/banner here before submission -->
+<div align="center">
+    <img src="https://drive.google.com/uc?export=view&id=1PvaRARmRHdVh7cIkODWpcSwSu-7WDbLa" alt="Qerity logo" width="120"/>
 
-# Qerity
+    ### Qerity
 
-**Check first, before you trust**
+    *Verify before you trust.*
+</div>
+
+<br>
+
+<img src="https://drive.google.com/uc?export=view&id=1bAvH1Jusn16nfovEDQZWsDypC_HzcP1Q" alt="Qerity banner" width="100%"/>
+
+<br>
+<br>
 
 ![Platform](https://img.shields.io/badge/platform-React%20Native%20Expo-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
