@@ -1,63 +1,62 @@
-<!-- TODO: tambahkan screenshot/banner app di sini sebelum submission -->
+<!-- TODO: add an app screenshot/banner here before submission -->
 
 # Qerity
 
-**Cek dulu, sebelum percaya**  
 **Check first, before you trust**
 
 ## Disclaimer
 
-> **Disclaimer:** Qerity adalah alat bantu screening awal, bukan bukti hukum dan bukan kepastian bahwa suatu konten merupakan penipuan. Hasil analisis harus selalu diverifikasi ulang melalui kanal resmi OJK dan pemeriksaan manual. Qerity tidak menggantikan verifikasi resmi.
+> **Disclaimer:** Qerity is an early screening aid, not legal evidence and not proof that content is fraudulent. All analysis results must be verified through official OJK channels and manual review. Qerity does not replace official verification.
 
 ## Overview
 
-Qerity adalah aplikasi mobile berbasis React Native dan Expo yang membantu masyarakat melakukan pemeriksaan awal terhadap konten mencurigakan, seperti bukti transfer dan testimoni pinjaman online ilegal.
+Qerity is a React Native and Expo mobile application that helps people perform an initial review of suspicious content, such as transfer receipts and illegal online lending testimonials.
 
-Aplikasi menggabungkan pemeriksaan forensik gambar ringan di perangkat dengan pengecekan nama lender terhadap snapshot daftar entitas legal OJK yang dibundel di aplikasi. Hasilnya berupa sinyal yang perlu ditinjau, bukan keputusan final.
+The application combines lightweight on-device image forensics with a lender-name check against a bundled snapshot of OJK-listed legal entities. Results are signals for review, not final determinations.
 
 ## Core Features
 
 ### EXIF metadata check
 
-Qerity memeriksa metadata EXIF yang tersedia dari gambar. Metadata kosong atau tidak adanya field `Software` diperlakukan sebagai sinyal netral, karena screenshot dan gambar yang dikirim ulang melalui aplikasi pesan atau media sosial sering kehilangan EXIF. Field `Software` yang terisi, termasuk pada lokasi bersarang seperti `TIFF.Software` atau `Exif.Software`, ditampilkan sebagai sinyal yang patut ditinjau.
+Qerity checks the EXIF metadata available in the image. Empty metadata or a missing `Software` field is treated as neutral because screenshots and images re-sent through messaging or social media apps often lose EXIF. A populated `Software` field, including nested locations such as `TIFF.Software` or `Exif.Software`, is shown as a signal that deserves review.
 
-Keberadaan EXIF tidak dianggap sebagai bukti bahwa gambar berasal dari kamera atau tidak pernah diedit.
+The presence of EXIF is not treated as evidence that an image came directly from a camera or was never edited.
 
 ### Error Level Analysis (ELA)
 
-ELA dijalankan di WebView menggunakan Canvas API. Aplikasi menghitung rata-rata perbedaan kompresi (`avgDiff`) dan persentase piksel yang melewati ambang perbedaan tertentu. Gambar dengan sisi terpanjang lebih dari 1600 piksel diperkecil sebelum analisis untuk mengurangi risiko WebView gagal memproses gambar besar.
+ELA runs in a WebView using the Canvas API. The application calculates the average compression difference (`avgDiff`) and the percentage of pixels that exceed a difference threshold. Images with a longest side above 1600 pixels are resized before analysis to reduce the risk of WebView failure on large images.
 
-ELA memiliki timeout 12 detik. Jika WebView gagal mengirim hasil, pemeriksaan ditampilkan sebagai `error`, bukan sebagai hasil tanpa sinyal.
+ELA has a 12-second timeout. If the WebView fails to return a result, the check is shown as `error` rather than as a result with no signal.
 
 ### Duplicate/similarity detection
 
-Qerity menghitung perceptual dHash 64-bit di WebView, lalu membandingkannya menggunakan jarak Hamming. Kecocokan dengan jarak hingga 10 bit diperlakukan sebagai gambar yang mirip atau duplikat berdasarkan heuristic yang dapat dikalibrasi ulang.
+Qerity calculates a 64-bit perceptual dHash in the WebView and compares it using Hamming distance. A distance of up to 10 bits is treated as a similar or duplicate image using a heuristic that can be recalibrated.
 
-Sumber pembandingnya adalah:
+The comparison sources are:
 
-- Riwayat hash scan sebelumnya di AsyncStorage pada perangkat user.
-- Dataset contoh scam yang dibundel di `data/knownScamHashes.js`.
+- Previous scan hash history stored in AsyncStorage on the user's device.
+- The bundled example scam dataset in `data/knownScamHashes.js`.
 
-Penyimpanan hash ke riwayat bersifat opsional. Tidak ditemukannya kecocokan bukan bukti bahwa gambar tersebut asli atau unik.
+Saving a hash to history is optional. Not finding a match is not evidence that the image is genuine or unique.
 
 ### OJK legality matching
 
-Nama lender dinormalisasi lalu diperiksa terhadap `app` dan `company` pada daftar OJK yang dibundel:
+The lender name is normalized and checked against the `app` and `company` fields in the bundled OJK list:
 
-- `legal`: nama sama persis setelah normalisasi.
-- `similar`: nama cukup dekat berdasarkan Levenshtein distance dengan batas proporsional terhadap panjang string.
-- `not_found`: tidak ditemukan kecocokan.
-- `skipped`: user tidak memasukkan nama lender.
+- `legal`: exact name match after normalization.
+- `similar`: sufficiently close name based on Levenshtein distance with a limit proportional to string length.
+- `not_found`: no match found.
+- `skipped`: the user did not enter a lender name.
 
-Input yang terlalu pendek ditolak untuk mengurangi false match. Hasil legalitas tetap harus diverifikasi ke kanal resmi OJK.
+Inputs that are too short are rejected to reduce false matches. Legality results must still be verified through official OJK channels.
 
-### Di luar scope versi ini
+### Out of scope for this version
 
-Deteksi gambar AI-generated dan model compression berbasis tensor-train/quantum-inspired **belum diimplementasikan** pada alur analisis versi ini. Keduanya adalah roadmap/future work, bukan fitur PoC yang sedang berjalan.
+AI-generated image detection and tensor-train/quantum-inspired compression models are **not implemented** in this version's analysis flow. Both are roadmap/future work, not running PoC features.
 
 ## Tech Stack
 
-| Layer | Teknologi |
+| Layer | Technology |
 | --- | --- |
 | Mobile framework | Expo SDK 54 (`expo` `~54.0.34`) |
 | UI runtime | React `19.1.0`, React Native `0.81.5` |
@@ -66,54 +65,54 @@ Deteksi gambar AI-generated dan model compression berbasis tensor-train/quantum-
 | Status bar | `expo-status-bar` `~3.0.8` |
 | In-app image analysis | `react-native-webview` `13.15.0`, Canvas API, HTML/JavaScript |
 | Local scan history | `@react-native-async-storage/async-storage` `^3.1.1` |
-| Application entry point | `index.js` dengan `registerRootComponent` dari Expo |
-| Package manager | npm, berdasarkan `package-lock.json` |
+| Application entry point | `index.js` with Expo's `registerRootComponent` |
+| Package manager | npm, based on `package-lock.json` |
 
 ## Repository Structure
 
 ```text
 qerity/
-├── App.js                         # Root navigation antar splash, home, hasil, dan about
-├── app.json                       # Konfigurasi aplikasi Expo
+├── App.js                         # Root navigation between splash, home, result, and about
+├── app.json                       # Expo application configuration
 ├── index.js                       # Entry point Expo
-├── package.json                   # Dependency dan script npm
-├── package-lock.json              # Lockfile dependency npm
-├── .gitignore                     # File/folder lokal yang tidak dilacak Git
+├── package.json                   # npm dependencies and scripts
+├── package-lock.json              # npm dependency lockfile
+├── .gitignore                     # Local files/folders excluded from Git
 ├── assets/
-│   ├── elaHtml.js                 # HTML/JavaScript WebView untuk ELA dan dHash
-│   └── tensorHtml.js              # Materi/roadmap tensor compression; bukan alur analisis aktif
+│   ├── elaHtml.js                 # WebView HTML/JavaScript for ELA and dHash
+│   └── tensorHtml.js              # Tensor compression material/roadmap; not an active analysis flow
 ├── data/
-│   ├── ojkLegalList.js            # Snapshot daftar legalitas OJK
-│   └── knownScamHashes.js         # Placeholder hash contoh scam
+│   ├── ojkLegalList.js             # OJK legality list snapshot
+│   └── knownScamHashes.js          # Placeholder example scam hashes
 ├── screens/
 │   ├── SplashScreen.js             # Splash screen
-│   ├── HomeScreen.js               # Input gambar, nama lender, dan lender-only check
-│   ├── ResultScreen.js             # Status pemeriksaan, hasil, dan verdict
-│   └── AboutScreen.js              # Informasi cara kerja aplikasi
+│   ├── HomeScreen.js               # Image input, lender name, and lender-only check
+│   ├── ResultScreen.js             # Check statuses, results, and verdict
+│   └── AboutScreen.js              # How the application works
 └── utils/
-    └── checkLegality.js            # Normalisasi dan pencocokan nama lender ke daftar OJK
+    └── checkLegality.js            # Normalization and lender-name matching against the OJK list
 ```
 
 ## Local Setup
 
 ### Prerequisites
 
-Sebelum mulai, siapkan:
+Before starting, prepare:
 
-1. **Node.js 20.x LTS** atau versi LTS yang kompatibel dengan Expo SDK 54.
-2. **npm**, yang biasanya terpasang bersama Node.js.
-3. **Expo Go** pada Android atau iPhone untuk menjalankan aplikasi melalui development server.
-4. Laptop dan HP yang berada pada jaringan Wi-Fi yang sama ketika memakai koneksi LAN.
-5. Kabel USB dan Android Studio hanya diperlukan jika ingin menjalankan emulator atau native Android secara lokal.
+1. **Node.js 20.x LTS** or another LTS version compatible with Expo SDK 54.
+2. **npm**, normally installed with Node.js.
+3. **Expo Go** on Android or iPhone to run the application through the development server.
+4. A laptop and phone on the same Wi-Fi network when using a LAN connection.
+5. A USB cable and Android Studio only if you want to run an emulator or native Android locally.
 
-Periksa instalasi:
+Check the installations:
 
 ```bash
 node --version
 npm --version
 ```
 
-Setelah dependency terpasang, pemeriksaan tambahan dapat dijalankan dengan:
+After installing dependencies, run an additional project check with:
 
 ```bash
 npx expo-doctor
@@ -128,54 +127,54 @@ cd Qerity
 
 ### Install dependencies
 
-Jalankan dari folder yang berisi `package.json`:
+Run this from the folder containing `package.json`:
 
 ```bash
 npm install
 ```
 
-### Jalankan development server
+### Run the development server
 
 ```bash
 npx expo start
 ```
 
-Expo akan menampilkan QR code di terminal atau membuka halaman Expo Dev Tools.
+Expo will display a QR code in the terminal or open the Expo Dev Tools page.
 
-### Buka di HP menggunakan Expo Go
+### Open on a phone using Expo Go
 
-1. Install atau update Expo Go dari Google Play Store atau Apple App Store.
-2. Pastikan HP dan laptop berada pada jaringan Wi-Fi yang sama.
-3. Jalankan `npx expo start`.
-4. Android: buka Expo Go lalu pilih **Scan QR code**.
-5. iPhone: scan QR code menggunakan kamera iPhone, lalu buka link tersebut dengan Expo Go.
-6. Tunggu Metro Bundler selesai memuat JavaScript.
-7. Beri izin kamera atau galeri ketika diminta oleh aplikasi.
-8. Pilih foto, atau masukkan nama lender lalu tekan **Check lender with OJK only** untuk melakukan pengecekan legalitas tanpa foto.
+1. Install or update Expo Go from Google Play Store or the Apple App Store.
+2. Make sure the phone and laptop are on the same Wi-Fi network.
+3. Run `npx expo start`.
+4. Android: open Expo Go and choose **Scan QR code**.
+5. iPhone: scan the QR code with the iPhone camera, then open the link with Expo Go.
+6. Wait for Metro Bundler to finish loading the JavaScript bundle.
+7. Grant camera or gallery permission when the application requests it.
+8. Choose a photo, or enter a lender name and press **Check lender with OJK only** to check legality without a photo.
 
-Jika jaringan kantor/kampus memblokir koneksi LAN, jalankan:
+If an office or campus network blocks the LAN connection, run:
 
 ```bash
 npx expo start --tunnel
 ```
 
-Mode tunnel biasanya lebih lambat karena traffic melewati layanan tunnel Expo.
+Tunnel mode is usually slower because traffic passes through Expo's tunnel service.
 
-### Menjalankan melalui emulator Android
+### Run through an Android emulator
 
-Repo ini menggunakan Expo managed workflow dan tidak menyertakan folder native `android/`. Untuk emulator, siapkan Android Studio, Android SDK, emulator yang aktif, serta environment variable Android yang diperlukan oleh React Native/Expo. Kemudian jalankan:
+This repository uses the Expo managed workflow and does not include a native `android/` folder. For an emulator, prepare Android Studio, the Android SDK, an active emulator, and the Android environment variables required by React Native/Expo. Then run:
 
 ```bash
 npx expo start
 ```
 
-Tekan `a` pada terminal Expo untuk mencoba membuka aplikasi pada emulator Android yang aktif.
+Press `a` in the Expo terminal to try opening the application on the active Android emulator.
 
 ### APK standalone
 
-**TODO sebelum submission:** repository ini belum memiliki `eas.json` atau konfigurasi EAS Build yang terverifikasi. Karena itu, belum ada perintah APK standalone yang dapat dijamin bekerja hanya dari konfigurasi repository saat ini.
+**TODO before submission:** this repository does not yet contain a verified `eas.json` or EAS Build configuration. Therefore, there is no standalone APK command that can be guaranteed to work using the current repository configuration alone.
 
-Setelah tim menyiapkan akun Expo dan konfigurasi EAS, alur yang perlu diverifikasi adalah:
+After the team prepares an Expo account and EAS configuration, the following flow must be verified:
 
 ```bash
 npx eas login
@@ -183,23 +182,23 @@ npx eas build:configure
 npx eas build --platform android
 ```
 
-Jangan mengandalkan bagian ini sebagai instruksi submission sebelum `eas.json`, package identifier, dan hasil build APK diuji pada perangkat nyata.
+Do not rely on this section as submission instructions until `eas.json`, the package identifier, and the APK build have been tested on a real device.
 
 ### Troubleshooting
 
-#### QR code tidak dapat dibuka
+#### The QR code cannot be opened
 
-- Pastikan laptop dan HP berada pada jaringan yang sama.
-- Matikan VPN sementara jika VPN mengubah routing jaringan lokal.
-- Coba `npx expo start --tunnel`.
-- Pastikan firewall tidak memblokir proses Node.js atau Expo.
+- Make sure the laptop and phone are on the same network.
+- Temporarily disable a VPN if it changes local network routing.
+- Try `npx expo start --tunnel`.
+- Make sure the firewall is not blocking Node.js or Expo.
 
-#### Expo Go menampilkan error versi
+#### Expo Go reports a version error
 
-- Jalankan `npx expo-doctor`.
-- Pastikan Expo Go sudah diperbarui.
-- Pastikan dependency Expo menggunakan versi pada `package.json`, terutama Expo SDK `54.0.34`.
-- Hapus instalasi dependency lalu pasang ulang bila diperlukan:
+- Run `npx expo-doctor`.
+- Make sure Expo Go is up to date.
+- Make sure the Expo dependencies use the versions in `package.json`, especially Expo SDK `54.0.34`.
+- Remove and reinstall dependencies if necessary:
 
 ```bash
 rm -rf node_modules package-lock.json
@@ -207,7 +206,7 @@ npm install
 npx expo start -c
 ```
 
-Pada Windows PowerShell, padanan penghapusan folder dependency adalah:
+On Windows PowerShell, the equivalent dependency removal commands are:
 
 ```powershell
 Remove-Item -Recurse -Force node_modules
@@ -216,56 +215,56 @@ npm install
 npx expo start -c
 ```
 
-#### Kamera atau galeri tidak dapat digunakan
+#### The camera or gallery cannot be used
 
-- Pastikan permission kamera atau media library diberikan.
-- Tutup dan buka kembali Expo Go setelah mengubah permission.
-- Coba menggunakan gambar dari galeri jika kamera perangkat tidak tersedia.
+- Make sure camera or media library permission has been granted.
+- Close and reopen Expo Go after changing permissions.
+- Try an image from the gallery if the device camera is unavailable.
 
-#### ELA tidak selesai
+#### ELA does not finish
 
-- Gambar yang sangat besar dapat membutuhkan waktu lebih lama.
-- Gambar tanpa data base64 atau WebView yang gagal akan ditampilkan sebagai `error`/`unavailable`.
-- Tunggu sampai batas timeout 12 detik sebelum mengulangi scan.
-- Coba gambar dengan resolusi lebih kecil untuk pengujian lokal.
+- Very large images may take longer to process.
+- An image without base64 data or a failed WebView is shown as `error`/`unavailable`.
+- Wait for the 12-second timeout before repeating the scan.
+- Try a lower-resolution image for local testing.
 
-#### Lender tidak ditemukan
+#### The lender is not found
 
-Daftar yang dipakai adalah snapshot terbatas. Nama yang dimasukkan harus merujuk pada nama aplikasi atau nama perusahaan yang tercantum pada snapshot. Verifikasi hasil langsung melalui kanal resmi OJK.
+The list is a limited snapshot. The input should match an application name or company name listed in the snapshot. Verify the result directly through official OJK channels.
 
 ## Known Limitations
 
-- Daftar OJK adalah snapshot per Juli 2026 dari sumber sekunder, bukan data yang di-fetch secara real-time dari `ojk.go.id`.
-- ELA kurang efektif untuk gambar PNG dan gambar yang sudah mengalami screenshot atau kompresi berulang kali.
-- Database duplicate detection masih terbatas. `data/knownScamHashes.js` adalah placeholder dan belum berisi dataset scam nyata yang telah dikurasi.
-- Deteksi AI-generated image belum diimplementasikan dan masuk roadmap.
-- Quantum-inspired atau tensor-train compression belum diimplementasikan dan masuk roadmap.
-- Semua hasil analisis adalah sinyal probabilistik, bukan kepastian.
-- Threshold ELA dan duplicate matching masih berupa heuristic dan perlu dikalibrasi dengan data uji nyata.
-- Snapshot legalitas OJK dapat berubah; nama baru, pencabutan, atau perubahan nama belum otomatis tercermin.
+- The OJK list is a July 2026 snapshot from a secondary source, not data fetched in real time from `ojk.go.id`.
+- ELA is less effective for PNG images and images that have been screenshotted or compressed repeatedly.
+- The duplicate detection database is limited. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
+- AI-generated image detection is not implemented and is on the roadmap.
+- Quantum-inspired or tensor-train compression is not implemented and is on the roadmap.
+- All analysis results are probabilistic signals, not certainty.
+- ELA and duplicate matching thresholds are heuristics and require calibration with real test data.
+- The OJK legality snapshot can change; new entities, revoked entities, or renamed entities are not automatically reflected.
 
 ## Roadmap / Future Work
 
-- Menambahkan deteksi AI-generated image menggunakan model pretrained yang dapat divalidasi.
-- Menambahkan quantum-inspired atau tensor-train model compression untuk pemrosesan on-device yang lebih ringan.
-- Menambahkan integrasi share langsung dari WhatsApp.
-- Memperbarui daftar OJK secara otomatis dari sumber resmi.
-- Mengisi dan mengkurasi database hash scam berdasarkan contoh yang telah diverifikasi.
-- Mengkalibrasi threshold ELA dan Hamming distance menggunakan dataset pengujian yang terdokumentasi.
-- Menambahkan konfigurasi EAS dan pipeline APK standalone yang dapat direproduksi.
+- Add AI-generated image detection using a validated pretrained model.
+- Add quantum-inspired or tensor-train model compression for lighter on-device processing.
+- Add direct sharing integration from WhatsApp.
+- Automatically update the OJK list from an official source.
+- Populate and curate the scam hash database using verified examples.
+- Calibrate ELA and Hamming distance thresholds using a documented test dataset.
+- Add reproducible EAS configuration and a standalone APK pipeline.
 
 ## Security & Privacy
 
-- Qerity tidak mengirim gambar scan ke server aplikasi. Gambar diproses sementara di perangkat, termasuk melalui WebView lokal untuk ELA dan dHash.
-- Metadata EXIF diproses secara lokal untuk pemeriksaan pada layar hasil.
-- Hash gambar dapat disimpan secara opsional di `AsyncStorage` pada perangkat user untuk membantu membandingkan scan berikutnya.
-- Riwayat hash tersebut tidak dikirim ke server melalui kode aplikasi saat ini.
-- User tetap perlu memahami bahwa penyimpanan lokal dapat ikut terhapus ketika data aplikasi dibersihkan atau aplikasi dihapus.
-- Jangan memasukkan data pribadi yang tidak diperlukan ke dalam nama lender atau gambar yang dibagikan saat demo.
+- Qerity does not send scanned images to an application server. Images are processed temporarily on the device, including through the local WebView for ELA and dHash.
+- EXIF metadata is processed locally for the result-screen check.
+- Image hashes can optionally be stored in `AsyncStorage` on the user's device to compare future scans.
+- The hash history is not sent to a server by the current application code.
+- Local storage may be deleted when application data is cleared or the application is uninstalled.
+- Do not include unnecessary personal data in lender names or images shared during a demo.
 
 ## Meet the Team
 
-<!-- TODO: ganti placeholder foto di bawah dengan foto asli sebelum submission. Upload ke Google Drive dengan akses "Anyone with the link", lalu ganti link id di src -->
+<!-- TODO: replace the photo placeholders below with real photos before submission. Upload them to Google Drive with "Anyone with the link" access, then replace the link IDs in src -->
 
 <br>
 <div align="left">
