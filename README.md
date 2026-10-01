@@ -50,9 +50,7 @@ The lender name is normalized and checked against the `app` and `company` fields
 
 Inputs that are **too short are rejected** to reduce false matches. Legality results must still be verified through official OJK channels.
 
-### Out of scope for this version
-
-AI-generated image detection and tensor-train/quantum-inspired compression models are **not implemented** in this version's analysis flow. Both are roadmap/future work, not running PoC features.
+**Out of scope for this version:** AI-generated image detection and quantum-inspired model compression are not part of the current analysis flow — see [Roadmap](#-roadmap--future-work) below.
 
 ## ⚙️ Tech Stack
 
