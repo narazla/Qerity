@@ -10,8 +10,6 @@
 
 <img src="https://drive.google.com/uc?export=view&id=1bAvH1Jusn16nfovEDQZWsDypC_HzcP1Q" alt="Qerity banner" width="100%"/>
 
-<br>
-
 ## Overview
 
 Qerity is a React Native and Expo mobile application that helps people perform an initial review of suspicious content, such as transfer receipts and illegal online lending testimonials.
