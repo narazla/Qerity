@@ -12,10 +12,6 @@
 
 <br>
 
-![Platform](https://img.shields.io/badge/platform-React%20Native%20Expo-blue)
-![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-hackathon%20PoC-orange)
-
 ## Overview
 
 Qerity is a React Native and Expo mobile application that helps people perform an initial review of suspicious content, such as transfer receipts and illegal online lending testimonials.
