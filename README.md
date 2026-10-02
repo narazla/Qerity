@@ -24,6 +24,20 @@ Rather than requiring users to navigate multiple separate channels (manual OJK l
 
 Qerity does not produce a final judgment of "real" or "fake." Each signal is reported on its own, with plain-language explanations, and the app consistently directs users to confirm further with OJK before making any financial decision. This is a deliberate design choice: in a track focused on human-centric security, the goal is to reduce the friction and delay that scammers exploit, not to replace a user's own judgment with false certainty.
 
+## Problem Statement
+
+> **951 illegal online lending (pinjol) entities** were found and shut down by Indonesia's Satgas PASTI in the first quarter of 2026 alone.
+> **515,345 scam reports** reached the Indonesia Anti-Scam Centre between November 2024 and March 2026.
+> Source: OJK / Satgas PASTI press release, 29 April 2026
+
+Illegal online lenders rarely rely on a single trick. They spread **fake loan advertisements, fabricated transfer receipts, and staged testimonials** through social media, private messages, and group chats. Each piece of content is made to look real and to create **urgency**. Victims who need money fast are pushed to pay or share personal data before they have time to think.
+
+Verifying today means **switching between several channels**. People must look up the lender on OJK's registry by hand, inspect the image, and ask friends for a second opinion. Under pressure, most people skip these steps. The result is **lost money, leaked personal data, and abusive collection practices**.
+
+Qerity gives users a **fast, private, one-step check** before they pay. It reports each signal separately and keeps the final decision in the user's hands. This fits the Human-Centric Security track because it **reduces the time pressure that scammers rely on**.
+
+Sources: [OJK Satgas PASTI press release (29 April 2026)](https://ojk.go.id/id/berita-dan-kegiatan/info-terkini/Documents/Pages/Satgas-PASTI-Hentikan-953-Entitas-Pinjol-Ilegal-dan-Penawaran-Investasi-Ilegal/Satgas%20PASTI%20Hentikan%20953%20Entitas%20Pinjol%20Ilegal%20dan%20Penawaran%20Investasi%20Ilegal.pdf)
+
 ## Core Features
 
 Qerity provides two core features. The first, on-device image forensics, runs **three independent signals** together whenever a user submits an image; the second, lender legality check, can be used on its own with just a name, no image required.
