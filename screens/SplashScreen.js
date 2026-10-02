@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, Animated, Image } from 'react-native';
+import { theme } from '../styles/theme';
 
 export default function SplashScreen() {
   const scale = useRef(new Animated.Value(0.85)).current;
@@ -30,14 +30,7 @@ export default function SplashScreen() {
           { opacity, transform: [{ scale }] },
         ]}
       >
-        <LinearGradient
-          colors={['#8b7cf6', '#5fe3d3']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.logoCircle}
-        >
-          <Text style={styles.logoLetter}>Q</Text>
-        </LinearGradient>
+        <Image source={require('../assets/branding/qerity-icon.png')} style={styles.logoCircle} />
         <Text style={styles.appName}>Qerity</Text>
         <Text style={styles.tagline}>Check first, before you trust</Text>
       </Animated.View>
@@ -48,7 +41,7 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0c12',
+    backgroundColor: theme.background,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -59,24 +52,17 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginBottom: 18,
-  },
-  logoLetter: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: '#0a0c12',
   },
   appName: {
     fontSize: 26,
     fontWeight: '700',
-    color: '#e8e9ee',
+    color: theme.textPrimary,
     letterSpacing: 0.5,
   },
   tagline: {
     fontSize: 13,
-    color: '#7b8095',
+    color: theme.textSecondary,
     marginTop: 6,
     fontFamily: undefined,
   },

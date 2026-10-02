@@ -6,6 +6,9 @@ import SplashScreen from './screens/SplashScreen';
 import HomeScreen from './screens/HomeScreen';
 import ResultScreen from './screens/ResultScreen';
 import AboutScreen from './screens/AboutScreen';
+import LenderScreen from './screens/LenderScreen';
+import HistoryScreen from './screens/HistoryScreen';
+import { theme } from './styles/theme';
 
 export default function App() {
   const [screen, setScreen] = useState('splash');
@@ -19,7 +22,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.root}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
       {screen === 'splash' && <SplashScreen />}
       {screen === 'home' && (
         <HomeScreen
@@ -31,9 +34,10 @@ export default function App() {
           onCheckLender={(entity) => {
             setImageAsset(null);
             setEntityName(entity);
-            setScreen('result');
+            setScreen('lender');
           }}
           onShowAbout={() => setScreen('about')}
+          onShowHistory={() => setScreen('history')}
         />
       )}
       {screen === 'result' && (
@@ -44,6 +48,13 @@ export default function App() {
         />
       )}
       {screen === 'about' && <AboutScreen onBack={() => setScreen('home')} />}
+      {screen === 'lender' && (
+        <LenderScreen
+          entityName={entityName}
+          onBack={() => setScreen('home')}
+        />
+      )}
+      {screen === 'history' && <HistoryScreen onBack={() => setScreen('home')} />}
     </SafeAreaView>
   );
 }
@@ -51,6 +62,6 @@ export default function App() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: '#0a0c12',
+    backgroundColor: theme.background,
   },
 });

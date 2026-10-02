@@ -7,11 +7,13 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from '../styles/theme';
 
-export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }) {
+export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout, onShowHistory }) {
   const [busy, setBusy] = useState(false);
   const [entityName, setEntityName] = useState('');
 
@@ -56,30 +58,27 @@ export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.logoRow}>
-          <LinearGradient
-            colors={['#8b7cf6', '#5fe3d3']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.logoSmall}
-          >
-            <Text style={styles.logoSmallLetter}>Q</Text>
-          </LinearGradient>
+          <Image source={require('../assets/branding/qerity-icon.png')} style={styles.logoSmall} />
           <Text style={styles.brand}>Qerity</Text>
         </View>
-        <TouchableOpacity onPress={onShowAbout}>
-          <Text style={styles.aboutLink}>How it Works</Text>
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={onShowHistory} style={styles.historyButton} accessibilityRole="button" accessibilityLabel="Open scan history">
+            <Ionicons name="time-outline" size={20} color={theme.accent} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={onShowAbout}>
+            <Text style={styles.aboutLink}>How it Works</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.hero}>
         <Text style={styles.eyebrow}>CONTENT VERIFICATION</Text>
         <Text style={styles.title}>
-          Before trusting a transfer receipt or loan testimonial,{' '}
-          <Text style={{ color: '#5fe3d3' }}>check it first.</Text>
+          Before trusting a loan ad, testimonial, or transfer receipt,{' '}
+          <Text style={styles.titleAccent}>check it first.</Text>
         </Text>
         <Text style={styles.desc}>
-          Qerity examines suspicious images through multiple layers of
-          analysis to spot signs of manual manipulation.
+          Qerity examines suspicious loan content through multiple layers of analysis to spot signs of manipulation.
         </Text>
       </View>
 
@@ -88,7 +87,7 @@ export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }
         <TextInput
           style={styles.input}
           placeholder="e.g. Danamas, PT Amartha Mikro Fintek"
-          placeholderTextColor="#5a5f6d"
+          placeholderTextColor={theme.textSecondary}
           value={entityName}
           onChangeText={setEntityName}
         />
@@ -98,7 +97,6 @@ export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }
         <TouchableOpacity
           style={styles.lenderOnlyBtn}
           onPress={() => onCheckLender(entityName)}
-          disabled={entityName.trim().length < 3}
           activeOpacity={0.85}
         >
           <Text style={styles.lenderOnlyText}>Check lender with OJK only</Text>
@@ -106,7 +104,7 @@ export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }
       </View>
 
       {busy ? (
-        <ActivityIndicator size="large" color="#5fe3d3" style={{ marginTop: 24 }} />
+        <ActivityIndicator size="large" color={theme.accent} style={{ marginTop: 24 }} />
       ) : (
         <View style={styles.actions}>
           <TouchableOpacity
@@ -114,14 +112,20 @@ export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }
             onPress={() => pickFrom('camera')}
             activeOpacity={0.85}
           >
-            <Text style={styles.primaryBtnText}>📷  Take Photo</Text>
+            <View style={styles.buttonContent}>
+              <Ionicons name="camera-outline" size={18} color={theme.surface} />
+              <Text style={styles.primaryBtnText}>Take Photo</Text>
+            </View>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.secondaryBtn}
             onPress={() => pickFrom('library')}
             activeOpacity={0.85}
           >
-            <Text style={styles.secondaryBtnText}>🖼️  Upload from Gallery</Text>
+            <View style={styles.buttonContent}>
+              <Ionicons name="image-outline" size={18} color={theme.accent} />
+              <Text style={styles.secondaryBtnText}>Upload from Gallery</Text>
+            </View>
           </TouchableOpacity>
         </View>
       )}
@@ -132,7 +136,7 @@ export default function HomeScreen({ onImagePicked, onCheckLender, onShowAbout }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a0c12',
+    backgroundColor: theme.background,
     paddingHorizontal: 20,
     paddingTop: 12,
   },
@@ -143,76 +147,78 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logoRow: { flexDirection: 'row', alignItems: 'center' },
+  headerActions: { alignItems: 'center', flexDirection: 'row', gap: 14 },
+  historyButton: { padding: 3 },
   logoSmall: {
-    width: 28,
-    height: 28,
+    width: 32,
+    height: 32,
     borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
     marginRight: 8,
   },
-  logoSmallLetter: { fontSize: 14, fontWeight: '700', color: '#0a0c12' },
-  brand: { fontSize: 16, fontWeight: '700', color: '#e8e9ee' },
-  aboutLink: { fontSize: 13, color: '#7b8095', textDecorationLine: 'underline' },
+  brand: { fontSize: 16, fontWeight: '700', color: theme.textPrimary },
+  aboutLink: { fontSize: 13, color: theme.accent, textDecorationLine: 'underline' },
 
   hero: { marginTop: 12 },
   eyebrow: {
     fontSize: 11,
-    color: '#5fe3d3',
+    color: theme.accent,
     letterSpacing: 1.2,
     marginBottom: 10,
   },
   title: {
     fontSize: 26,
     fontWeight: '700',
-    color: '#e8e9ee',
+    color: theme.textPrimary,
     lineHeight: 34,
   },
+  titleAccent: { color: theme.accent },
   desc: {
     fontSize: 14,
-    color: '#9aa0ab',
+    color: theme.textSecondary,
     marginTop: 14,
     lineHeight: 21,
   },
 
   inputGroup: { marginTop: 28 },
-  inputLabel: { color: '#9aa0ab', fontSize: 13, marginBottom: 8, fontWeight: '600' },
+  inputLabel: { color: theme.textSecondary, fontSize: 13, marginBottom: 8, fontWeight: '600' },
   input: {
-    backgroundColor: '#12151f',
+    backgroundColor: theme.surface,
     borderWidth: 1,
-    borderColor: '#2a2f3d',
+    borderColor: theme.border,
     borderRadius: 12,
     paddingHorizontal: 14,
     paddingVertical: 12,
-    color: '#e8e9ee',
+    color: theme.textPrimary,
     fontSize: 14,
   },
-  inputHint: { color: '#5a5f6d', fontSize: 11, marginTop: 6, lineHeight: 15 },
+  inputHint: { color: theme.textSecondary, fontSize: 11, marginTop: 6, lineHeight: 15 },
   lenderOnlyBtn: {
     borderWidth: 1,
-    borderColor: '#5fe3d3',
+    borderColor: theme.accent,
     borderRadius: 12,
     paddingVertical: 12,
     alignItems: 'center',
     marginTop: 12,
   },
-  lenderOnlyText: { color: '#5fe3d3', fontSize: 13, fontWeight: '600' },
+  lenderOnlyText: { color: theme.accent, fontSize: 13, fontWeight: '600' },
 
-  actions: { marginTop: 24 },
+  actions: { flexDirection: 'row', gap: 10, marginTop: 32 },
   primaryBtn: {
-    backgroundColor: '#5fe3d3',
+    flex: 1,
+    backgroundColor: theme.accent,
     borderRadius: 14,
-    paddingVertical: 16,
+    paddingVertical: 14,
     alignItems: 'center',
-    marginBottom: 12,
   },
-  primaryBtnText: { fontSize: 15, fontWeight: '700', color: '#0a0c12' },
+  primaryBtnText: { fontSize: 14, fontWeight: '700', color: theme.surface, marginLeft: 7 },
   secondaryBtn: {
+    flex: 1,
     borderWidth: 1,
-    borderColor: '#2a2f3d',
+    borderColor: theme.accent,
     borderRadius: 14,
-    paddingVertical: 16,
+    paddingVertical: 14,
     alignItems: 'center',
   },
-  secondaryBtnText: { fontSize: 15, fontWeight: '600', color: '#e8e9ee' },
+  secondaryBtnText: { fontSize: 14, fontWeight: '600', color: theme.accent, marginLeft: 7 },
+  buttonContent: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center' },
 });
