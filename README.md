@@ -2,57 +2,55 @@
 <img src="https://drive.google.com/uc?export=view&id=1PvaRARmRHdVh7cIkODWpcSwSu-7WDbLa" alt="Qerity logo" width="120"/>
 
 ### Qerity
-
 *Verify before you trust.*
 </div>
 
 <br>
 
 <img src="https://drive.google.com/uc?export=view&id=1bAvH1Jusn16nfovEDQZWsDypC_HzcP1Q" alt="Qerity banner" width="100%"/>
+<br>
 
-## Overview
+<div align="center">
 
-Qerity is a React Native and Expo mobile application that helps people perform an initial review of suspicious content, such as transfer receipts and illegal online lending testimonials.
+**[Download Android APK (Pre-release)](https://github.com/narazla/Qerity/releases/latest)**
 
-The application combines lightweight on-device image forensics with a lender-name check against a bundled snapshot of OJK-listed legal entities. Results are signals for review, not final determinations.
+</div>
 
-## 🔍 Core Features
+<br>
 
-### EXIF metadata check
+Qerity is a mobile app that helps people verify suspicious loan-related content before making a financial decision. Illegal online lending (*pinjol ilegal*) in Indonesia relies heavily on manipulated content like fake loan advertisements, fabricated transfer receipts, and staged testimonials to pressure victims into transferring money quickly. Victims in urgent need of funds rarely have time to verify what they're seeing before it's too late.
 
-Qerity checks the EXIF metadata available in the image. Empty metadata or a missing `Software` field is **treated as neutral** because screenshots and images re-sent through messaging or social media apps often lose EXIF. A populated `Software` field, including nested locations such as `TIFF.Software` or `Exif.Software`, is shown as a signal that deserves review.
+Rather than requiring users to navigate multiple separate channels (manual OJK lookups, basic image inspection, asking around for second opinions), Qerity consolidates these checks into a single scan. Users upload or photograph suspicious content, and within seconds receive a breakdown of findings across four independent signals: image metadata, visual editing patterns, duplicate/known-scam matching, and lender legality against OJK's official registry.
 
-The presence of EXIF is **not treated as evidence** that an image came directly from a camera or was never edited.
+Qerity does not produce a final judgment of "real" or "fake." Each signal is reported on its own, with plain-language explanations, and the app consistently directs users to confirm further with OJK before making any financial decision. This is a deliberate design choice: in a track focused on human-centric security, the goal is to reduce the friction and delay that scammers exploit, not to replace a user's own judgment with false certainty.
 
-### Error Level Analysis (ELA)
+## Core Features
 
-ELA runs in a WebView using the Canvas API. The application calculates the average compression difference (`avgDiff`) and the **percentage of pixels** that exceed a difference threshold. Images with a longest side above **1600 pixels** are resized before analysis to reduce the risk of WebView failure on large images.
+Qerity provides two core features. The first, on-device image forensics, runs **three independent signals** together whenever a user submits an image; the second, lender legality check, can be used on its own with just a name, no image required.
 
-ELA has a **12-second timeout**. If the WebView fails to return a result, the check is shown as `error` rather than as a result with no signal.
+### 1. On-Device Image Forensics
 
-### Duplicate/similarity detection
+Given a photo or screenshot, Qerity runs three lightweight forensic signals locally on the device:
 
-Qerity calculates a **64-bit perceptual dHash** in the WebView and compares it using **Hamming distance**. A distance of up to **10 bits** is treated as a similar or duplicate image using a heuristic that can be recalibrated.
+- **EXIF metadata inspection** — checks the file's embedded metadata for signs of prior editing (e.g. a populated `Software` field). Missing EXIF is treated as **neutral**, not suspicious, since screenshots and images re-sent through messaging or social apps routinely lose this metadata; its presence or absence alone is never treated as proof of authenticity.
+- **Error Level Analysis (ELA)** — recompresses the image and visualizes compression-level differences as a heatmap, surfacing regions that may have been pasted in or edited. This runs in a WebView using the Canvas API, with a **12-second timeout**: if analysis doesn't complete in time, the check is reported as unavailable rather than silently treated as a clean result. ELA is less effective on PNG files or images that have been screenshotted and recompressed repeatedly.
+- **Duplicate / similarity matching** — computes a 64-bit perceptual hash (dHash) of the image and compares it, via Hamming distance, against the user's own scan history and a small bundled sample set of known scam content. **Not finding a match is not evidence that the image is genuine or unique** — it only means nothing matched what Qerity has seen so far.
 
-The comparison sources are:
+These three signals are combined into a single risk level (low / medium / high) with plain-language reasons, never a binary "real" or "fake" verdict.
 
-- Previous scan hash history stored in AsyncStorage on the user's device.
-- The bundled example scam dataset in `data/knownScamHashes.js`.
+### 2. Lender Legality Check (OJK)
 
-Saving a hash to history is optional. **Not finding a match is not evidence that the image is genuine** or unique.
+Given a lender or company name — entered on its own or alongside an image — Qerity checks it against a snapshot of OJK's official list of licensed lending entities, using exact and fuzzy (similarity-based) matching:
 
-### OJK legality matching
+- **Exact match** → reported as verified against the snapshot.
+- **Similar but not exact** (e.g. a scam name imitating a real one, like "Danamas Cepat Cair" vs. "Danamas") → flagged explicitly as a near-match, not treated as verified.
+- **No match found** → flagged as not found in the snapshot; this does not confirm the entity is illegal, only that it isn't in Qerity's current data.
 
-The lender name is normalized and checked against the `app` and `company` fields in the bundled OJK list:
+This check does not require an image and can be used as a standalone, instant lookup.
 
-- `legal`: **exact name match** after normalization.
-- `similar`: **sufficiently close name** based on Levenshtein distance with a limit proportional to string length.
-- `not_found`: **no match found**.
-- `skipped`: the user did not enter a lender name.
+---
 
-Inputs that are **too short are rejected** to reduce false matches. Legality results must still be verified through official OJK channels.
-
-**Out of scope for this version:** AI-generated image detection and quantum-inspired model compression are not part of the current analysis flow — see [Roadmap](#-roadmap--future-work) below.
+**Out of scope for this version:** AI-generated image detection and quantum-inspired model compression are not part of the current analysis flow — see [Roadmap](#roadmap--future-work) below.
 
 ## ⚙️ Tech Stack
 
@@ -61,10 +59,12 @@ Inputs that are **too short are rejected** to reduce false matches. Legality res
 | Mobile framework | Expo SDK 57 (`expo` `^57.0.26`) |
 | UI runtime | React `19.2.3`, React Native `0.86.3` |
 | Image input | `expo-image-picker` `~57.0.20` |
-| Gradient/UI styling | `expo-linear-gradient` `~57.0.2` |
+| Icons | `@expo/vector-icons` `^15.0.2` (Ionicons) |
+| Custom fonts | `expo-font` `~57.0.4` |
 | Status bar | `expo-status-bar` `~57.0.1` |
-| In-app image analysis | `react-native-webview` `13.16.1`, Canvas API, HTML/JavaScript |
+| In-app image analysis | `react-native-webview` `13.16.1` (Canvas API, HTML/JavaScript) — used for Error Level Analysis and perceptual hashing |
 | Local scan history | `@react-native-async-storage/async-storage` `2.2.0` |
+| Design system | `styles/theme.js` — shared color tokens, used across all screens |
 | Application entry point | `index.js` with Expo's `registerRootComponent` |
 | Package manager | npm, based on `package-lock.json` |
 
@@ -72,53 +72,66 @@ Inputs that are **too short are rejected** to reduce false matches. Legality res
 
 ```text
 qerity/
-├── App.js                         # Root navigation between splash, home, result, and about
-├── app.json                       # Expo application configuration
-├── index.js                       # Entry point Expo
-├── package.json                   # npm dependencies and scripts
-├── package-lock.json              # npm dependency lockfile
-├── .gitignore                     # Local files/folders excluded from Git
+├── App.js                          # Root navigation across all screens (splash, home, result, lender, history, about)
+├── app.json                        # Expo application configuration
+├── eas.json                        # EAS Build configuration (Android APK profile)
+├── index.js                        # Expo entry point
+├── package.json                    # npm dependencies and scripts
+├── package-lock.json               # npm dependency lockfile
+├── .gitignore                      # Local files/folders excluded from Git
 ├── assets/
-│   ├── elaHtml.js                 # WebView HTML/JavaScript for ELA and dHash
-│   └── tensorHtml.js              # Tensor compression material/roadmap; not an active analysis flow
+│   ├── elaHtml.js                  # WebView HTML/JS: Error Level Analysis + perceptual dHash
+│   ├── icon.png, favicon.png,
+│   │   splash-icon.png,
+│   │   android-icon-*.png          # Default Expo-generated app icon assets
+│   └── branding/
+│       ├── qerity-icon.png         # Qerity logo, used in README and in-app headers
+│       └── qerity-banner.png       # Qerity banner, used in README
 ├── data/
-│   ├── ojkLegalList.js             # OJK legality list snapshot
-│   └── knownScamHashes.js          # Placeholder example scam hashes
+│   ├── ojkLegalList.js             # OJK-licensed lender snapshot (name, company, snapshot date)
+│   └── knownScamHashes.js          # Bundled sample scam-image hashes (placeholder, not yet populated)
 ├── screens/
-│   ├── SplashScreen.js             # Splash screen
-│   ├── HomeScreen.js               # Image input, lender name, and lender-only check
-│   ├── ResultScreen.js             # Check statuses, results, and verdict
-│   └── AboutScreen.js              # How the application works
+│   ├── SplashScreen.js             # App splash screen
+│   ├── HomeScreen.js               # Image input, lender name input, and entry point to all other screens
+│   ├── ResultScreen.js             # Forensic signal results, OJK legality card, and combined verdict
+│   ├── LenderScreen.js             # Standalone lender legality check (no image required)
+│   ├── HistoryScreen.js            # Local scan history (metadata only, no images stored)
+│   └── AboutScreen.js              # "How it Works" onboarding carousel
+├── styles/
+│   └── theme.js                    # Shared design tokens (colors, used across all screens)
 └── utils/
-    └── checkLegality.js            # Normalization and lender-name matching against the OJK list
+    ├── checkLegality.js            # Name normalization, exact/similarity matching against the OJK list
+    └── scanHistory.js              # AsyncStorage read/write for local scan history
 ```
 
 ## 🚀 Local Setup
+
+### Quick Start (No Setup Required)
+
+If you just want to try the app without setting up a development environment, download the standalone APK from [Releases](https://github.com/narazla/Qerity/releases/latest) and install it directly on an Android device (enable "Install from unknown sources" if prompted).
+
+> **Note:** This build was tested on an Android Studio emulator (Pixel 6, API 37.2) and has not yet been tested on a physical Android device. Primary development and testing throughout this project was done via Expo Go, since the team develops on iOS devices.
+
+The rest of this section covers running the project from source.
 
 ### Prerequisites
 
 Before starting, prepare:
 
-1. **Node.js 20.x LTS** or another LTS version compatible with Expo SDK 57.
-2. **npm**, normally installed with Node.js.
-3. **Expo Go** on Android or iPhone to run the application through the development server.
-4. A laptop and phone on the same Wi-Fi network when using a LAN connection.
-5. A USB cable and Android Studio only if you want to run an emulator or native Android locally.
+1. **Node.js 20.x LTS**, or another LTS version compatible with Expo SDK 57.
+2. **npm**, normally installed together with Node.js.
+3. **Expo Go**, installed on an Android or iPhone device, to run the app through the development server.
+4. A laptop and phone connected to the same Wi-Fi network, when using a LAN connection.
+5. **Android Studio**, with an emulator configured, only if you want to run a native Android emulator or test the standalone APK without a physical device.
 
-Check the installations:
+Check your installations:
 
 ```bash
 node --version
 npm --version
 ```
 
-After installing dependencies, run an additional project check with:
-
-```bash
-npx expo-doctor
-```
-
-### Clone repository
+### Clone the repository
 
 ```bash
 git clone https://github.com/narazla/Qerity.git
@@ -133,58 +146,81 @@ Run this from the folder containing `package.json`:
 npm install
 ```
 
+After installing, you can optionally run a project health check:
+
+```bash
+npx expo-doctor
+```
+
 ### Run the development server
 
 ```bash
 npx expo start
 ```
 
-Expo will display a QR code in the terminal or open the Expo Dev Tools page.
+Expo will display a QR code in the terminal, and optionally open the Expo Dev Tools page in your browser.
 
 ### Open on a phone using Expo Go
 
-1. Install or update Expo Go from Google Play Store or the Apple App Store.
+1. Install or update **Expo Go** from the Google Play Store or Apple App Store.
 2. Make sure the phone and laptop are on the same Wi-Fi network.
 3. Run `npx expo start`.
-4. Android: open Expo Go and choose **Scan QR code**.
-5. iPhone: scan the QR code with the iPhone camera, then open the link with Expo Go.
+4. **Android:** open Expo Go and choose **Scan QR code**.
+5. **iPhone:** scan the QR code with the iPhone camera, then open the link with Expo Go.
 6. Wait for Metro Bundler to finish loading the JavaScript bundle.
-7. Grant camera or gallery permission when the application requests it.
+7. Grant camera or gallery permission when the app requests it.
 8. Choose a photo, or enter a lender name and press **Check lender with OJK only** to check legality without a photo.
 
-If an office or campus network blocks the LAN connection, run:
+If an office or campus network blocks the LAN connection, use tunnel mode instead:
 
 ```bash
 npx expo start --tunnel
 ```
 
-Tunnel mode is usually slower because traffic passes through Expo's tunnel service.
+Tunnel mode is usually slower, since traffic passes through Expo's tunnel service.
 
-### Run through an Android emulator
+### Run through an Android emulator (development build)
 
-This repository uses the Expo managed workflow and does not include a native `android/` folder. For an emulator, prepare Android Studio, the Android SDK, an active emulator, and the Android environment variables required by React Native/Expo. Then run:
+This repository uses the Expo managed workflow and does not include a native `android/` folder. To use an emulator, set up Android Studio, the Android SDK, an active emulator, and the environment variables required by React Native/Expo. Then run:
 
 ```bash
 npx expo start
 ```
 
-Press `a` in the Expo terminal to try opening the application on the active Android emulator.
+Press `a` in the Expo terminal to open the app on the active Android emulator.
 
-### APK standalone
+### Testing the standalone APK on an emulator
 
-**TODO before submission:** this repository does not yet contain a verified `eas.json` or EAS Build configuration. Therefore, there is no standalone APK command that can be guaranteed to work using the current repository configuration alone.
-
-After the team prepares an Expo account and EAS configuration, the following flow must be verified:
+Instead of a physical device, you can also install the standalone APK (see [Standalone APK](#standalone-apk-no-expo-go-required) below) on an Android Studio emulator:
 
 ```bash
-npx eas login
-npx eas build:configure
-npx eas build --platform android
+adb devices                    # confirm the emulator is listed with status "device"
+adb install path\to\qerity.apk
 ```
 
-Do not rely on this section as submission instructions until `eas.json`, the package identifier, and the APK build have been tested on a real device.
+### Standalone APK (No Expo Go Required)
+
+A pre-built standalone APK is available and does not require Expo Go, a development server, or any setup — see [Releases](https://github.com/narazla/Qerity/releases/latest).
+
+To build your own APK from this repository:
+
+```bash
+npm install -g eas-cli
+eas login
+eas build --platform android --profile preview
+```
+
+This uses the `preview` profile defined in `eas.json`, configured to produce an installable `.apk` file rather than the Play Store `.aab` format. The build runs on Expo's servers and typically takes 10–20 minutes; once complete, a download link is provided in the terminal and on the [EAS dashboard](https://expo.dev/accounts/nazlaazzahra/projects/qerity).
+
+> **Note:** iOS standalone builds require an active Apple Developer Program membership and are out of scope for this submission. iOS testing was done exclusively through Expo Go.
 
 ### Troubleshooting
+
+#### "Port 8081 is being used by another process"
+
+This usually means a previous Expo session is still running in the background. Either:
+- Accept the prompt to use an alternative port (e.g. 8082), or
+- Close any other terminal windows running `expo start`, then retry.
 
 #### The QR code cannot be opened
 
@@ -195,10 +231,22 @@ Do not rely on this section as submission instructions until `eas.json`, the pac
 
 #### Expo Go reports a version error
 
-- Run `npx expo-doctor`.
-- Make sure Expo Go is up to date.
-- Make sure the Expo dependencies use the versions in `package.json`, especially Expo SDK `57.0.26`.
-- Remove and reinstall dependencies if necessary:
+Expo Go updates automatically and may no longer match the SDK version this project uses. If you see a message like "Project is incompatible with this version of Expo Go":
+
+```bash
+npx expo install expo@^57.0.0
+npx expo install --fix
+npm install
+npx expo start
+```
+
+This upgrades the project's dependencies to match the SDK version your installed Expo Go expects. Re-test all core features after upgrading, since dependency versions may shift slightly.
+
+Other steps that can help:
+
+- Run `npx expo-doctor` to check for dependency mismatches.
+- Make sure Expo Go is up to date on your device.
+- Remove and reinstall dependencies if the issue persists:
 
 ```bash
 rm -rf node_modules package-lock.json
@@ -206,7 +254,7 @@ npm install
 npx expo start -c
 ```
 
-On Windows PowerShell, the equivalent dependency removal commands are:
+On Windows PowerShell, the equivalent commands are:
 
 ```powershell
 Remove-Item -Recurse -Force node_modules
@@ -214,6 +262,16 @@ Remove-Item -Force package-lock.json
 npm install
 npx expo start -c
 ```
+
+#### Expo Go requires sign-in
+
+If you see a message like "You're signed in to Expo Go as [...], but not signed in to Expo CLI":
+
+```bash
+npx expo login
+```
+
+Sign in with the same account used in Expo Go, then retry `npx expo start`.
 
 #### The camera or gallery cannot be used
 
@@ -237,30 +295,30 @@ The list is a limited snapshot. The input should match an application name or co
 - The OJK list is a **July 2026 snapshot** from a secondary source, not data fetched in real time from `ojk.go.id`.
 - ELA is **less effective for PNG images** and images that have been screenshotted or compressed repeatedly.
 - The **duplicate detection database is limited**. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
-- **AI-generated image detection is not implemented** and is on the roadmap.
-- **Quantum-inspired or tensor-train compression is not implemented** and is on the roadmap.
+- The **duplicate detection scope is self-contained**: it only compares against the user's own scan history and the bundled sample set, not a broader external database.
 - All analysis results are **probabilistic signals**, not certainty.
 - ELA and duplicate matching thresholds are **heuristics** and require calibration with real test data.
 - The **OJK legality snapshot can change**; new entities, revoked entities, or renamed entities are not automatically reflected.
+- The app **does not use user accounts or login**; scan history is stored locally per device and is not synced or backed up.
+- **iOS builds were not tested as standalone apps**; development and testing were done exclusively through Expo Go, since the team primarily uses iOS devices.
+- The **standalone Android APK has only been tested on an emulator** (Android Studio, Pixel 6, API 37.2), not yet on a physical Android device.
 
 ## 🗺️ Roadmap / Future Work
 
 - Add **AI-generated image detection** using a validated pretrained model.
 - Add **quantum-inspired or tensor-train model compression** for lighter on-device processing.
-- Add **direct sharing integration from WhatsApp**.
 - **Automatically update the OJK list** from an official source.
-- **Populate and curate the scam hash database** using verified examples.
-- **Calibrate ELA and Hamming distance thresholds** using a documented test dataset.
-- Add **reproducible EAS configuration** and a standalone APK pipeline.
+- **Physical device testing** for the standalone Android APK, beyond the current emulator-only testing.
 
 ## 🔒 Security & Privacy
 
-- Qerity does not send scanned images to an application server. Images are processed temporarily on the device, including through the local WebView for ELA and dHash.
-- EXIF metadata is processed locally for the result-screen check.
-- Image hashes can optionally be stored in `AsyncStorage` on the user's device to compare future scans.
-- The hash history is not sent to a server by the current application code.
-- Local storage may be deleted when application data is cleared or the application is uninstalled.
-- Do not include unnecessary personal data in lender names or images shared during a demo.
+- **No backend server.** Qerity does not send scanned images anywhere. All image analysis (EXIF inspection, ELA, perceptual hashing) runs entirely on-device, including inside the local WebView used for ELA and hash computation.
+- **No accounts, no login.** There is no user registration, authentication, or server-side user data. This is a deliberate design choice: for a tool used in urgent, high-pressure moments, removing accounts reduces the attack surface rather than adding a layer of protection that isn't needed.
+- **Images are never stored**, on-device or elsewhere. Only the user's opt-in scan history retains metadata: a perceptual hash, timestamp, verdict level, and (if provided) lender name and legality status — never the image itself.
+- **Local-only storage.** When a user opts in ("Save this hash to local scan history"), data is written to `AsyncStorage` on the device and is never transmitted. This data is cleared automatically if the app is uninstalled or its storage is cleared manually.
+- **No analytics or tracking.** The app does not integrate any third-party analytics, crash reporting, or advertising SDKs.
+- **OJK data is static and bundled**, not fetched live, so no network request is made for the legality check itself.
+- **Demo hygiene:** when demonstrating the app, avoid entering real personal data (real account numbers, real names) in test images or lender name inputs — use redacted or synthetic examples instead.
 
 ## Meet the Team
 
