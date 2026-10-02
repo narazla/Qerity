@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { buildElaHtml } from '../assets/elaHtml';
 import { checkLegality } from '../utils/checkLegality';
-import { KNOWN_SCAM_HASHES } from '../data/knownScamHashes';
+import { getActiveData } from '../utils/dataPack';
 import { cardShadow, theme } from '../styles/theme';
 import { saveScanHistory } from '../utils/scanHistory';
 
@@ -43,6 +43,8 @@ export default function ResultScreen({ asset, entityName, onBack }) {
 
   const exifFindings = analyzeExif(asset && asset.exif);
   const legalityResult = checkLegality(entityName);
+  const activeData = getActiveData();
+  const knownScamHashes = activeData.scamHashes;
 
   useEffect(() => {
     setStatuses((current) => ({
@@ -135,8 +137,12 @@ export default function ResultScreen({ asset, entityName, onBack }) {
 
   const duplicateFinding = duplicateResult && {
     text: duplicateResult.match
-      ? `This image looks similar to ${duplicateResult.source === 'history' ? 'one of your previous scans' : 'a bundled scam example'}.`
-      : 'We did not find a match in our limited database. This does not prove the image is genuine.',
+      ? duplicateResult.source === 'history'
+        ? 'This image looks similar to one of your previous scans.'
+        : `This image looks similar to one of our ${knownScamHashes.length} known scam images.`
+      : knownScamHashes.length === 0
+        ? "No match found in your own scan history. We don't yet have a sample set of known scam images to compare against."
+        : `No match found in your scan history or our sample set of ${knownScamHashes.length} known scam images.`,
     risk: Boolean(duplicateResult.match),
   };
   const riskCount = [exifFindings, [elaFinding], [legalityFinding], [duplicateFinding]]
@@ -182,6 +188,10 @@ export default function ResultScreen({ asset, entityName, onBack }) {
       </View>
 
       {asset && <Image source={{ uri: asset.uri }} style={styles.preview} />}
+      <Text style={styles.dataVersion}>
+        Data version {activeData.meta.version}, snapshot {formatSnapshotDate(activeData.meta.snapshotDate)}
+        {activeData.meta.isExpired ? '. This list may be outdated. Confirm with OJK.' : ''}
+      </Text>
 
       <View style={styles.webviewCard}>
         <Text style={styles.cardLabel}>Image editing check</Text>
@@ -287,7 +297,7 @@ async function compareAndStoreHash(hash) {
   const history = rawHistory ? JSON.parse(rawHistory) : [];
   const sources = [
     ...history.map((item) => ({ ...item, source: 'history' })),
-    ...KNOWN_SCAM_HASHES.map((item) => ({ ...item, source: 'known' })),
+    ...knownScamHashes.map((item) => ({ ...item, source: 'known' })),
   ];
   const match = sources
     .map((item) => ({ ...item, distance: hammingDistance(hash, item.hash) }))
@@ -318,6 +328,11 @@ function analyzeExif(exif) {
       risk: true,
     });
   }
+
+  function formatSnapshotDate(value) {
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? 'unknown date' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
   return findings;
 }
 
@@ -341,6 +356,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: theme.surface,
   },
+  dataVersion: { color: theme.textSecondary, fontSize: 11, marginTop: 8 },
 
   webviewCard: {
     marginTop: 16,

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   FlatList,
   Image,
@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   useWindowDimensions,
   View,
+  Switch,
 } from 'react-native';
+import { getAutoUpdateEnabled, setAutoUpdateEnabled } from '../utils/dataPack';
 import { Ionicons } from '@expo/vector-icons';
 import { theme } from '../styles/theme';
 
@@ -57,6 +59,16 @@ function AboutCarousel({ onBack }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const { width } = useWindowDimensions();
   const isLastSlide = activeIndex === SLIDES.length - 1;
+  const [autoUpdateEnabled, setAutoUpdateEnabledState] = useState(true);
+
+  useEffect(() => {
+    getAutoUpdateEnabled().then(setAutoUpdateEnabledState).catch(() => {});
+  }, []);
+
+  async function toggleAutoUpdate(value) {
+    setAutoUpdateEnabledState(value);
+    await setAutoUpdateEnabled(value);
+  }
 
   function goToNextSlide() {
     const nextIndex = Math.min(activeIndex + 1, SLIDES.length - 1);
@@ -105,6 +117,14 @@ function AboutCarousel({ onBack }) {
           </View>
         )}
       />
+
+      <View style={styles.updateSetting}>
+        <View style={styles.updateCopy}>
+          <Text style={styles.updateTitle}>Automatic data updates</Text>
+          <Text style={styles.updateBody}>Downloads a public, signed data file. No images, lender names, or scan history are sent.</Text>
+        </View>
+        <Switch value={autoUpdateEnabled} onValueChange={toggleAutoUpdate} />
+      </View>
 
       <View style={styles.footer}>
         <View style={styles.pagination} accessibilityLabel={`Slide ${activeIndex + 1} of ${SLIDES.length}`}>
@@ -169,6 +189,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footer: { paddingHorizontal: 20, paddingBottom: 28 },
+  updateSetting: { alignItems: 'center', flexDirection: 'row', gap: 12, paddingHorizontal: 20, paddingBottom: 16 },
+  updateCopy: { flex: 1 },
+  updateTitle: { color: theme.textPrimary, fontSize: 14, fontWeight: '700' },
+  updateBody: { color: theme.textSecondary, fontSize: 11, lineHeight: 16, marginTop: 4 },
   pagination: {
     alignItems: 'center',
     flexDirection: 'row',

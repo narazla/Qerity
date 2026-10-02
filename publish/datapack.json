@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "issuedAt": "2026-10-02T23:38:27.986Z",
+  "expiresAt": "2026-12-31T23:38:27.997Z",
+  "source": {
+    "name": "OJK licensed lender list (secondary source)",
+    "snapshotDate": "2026-10-02",
+    "note": ""
+  },
+  "ojk": [
+    {
+      "app": "Danamas",
+      "company": "PT Pasar Dana Pinjaman"
+    },
+    {
+      "app": "Amartha",
+      "company": "PT Amartha Mikro Fintek"
+    },
+    {
+      "app": "Dompet Kilat",
+      "company": "PT Indo Fin Tek"
+    },
+    {
+      "app": "Boost",
+      "company": "PT Creative Mobile Adventure"
+    },
+    {
+      "app": "Tokomodal",
+      "company": "PT Toko Modal Mitra Usaha"
+    },
+    {
+      "app": "Modalku",
+      "company": "PT Mitrausaha Indonesia Grup"
+    },
+    {
+      "app": "KTA Kilat",
+      "company": "PT Pendanaan Teknologi Nusa"
+    },
+    {
+      "app": "Kredit Pintar",
+      "company": "PT Kredit Pintar Indonesia"
+    },
+    {
+      "app": "Finmas",
+      "company": "PT Oriente Mas Sejahtera"
+    },
+    {
+      "app": "KlikA2C",
+      "company": "PT Aman Cermat Cepat"
+    },
+    {
+      "app": "Akseleran",
+      "company": "PT Akseleran Keuangan Inklusif Indonesia"
+    },
+    {
+      "app": "Ammana",
+      "company": "PT Ammana Fintek Syariah"
+    },
+    {
+      "app": "PinjamanGo",
+      "company": "PT Dana Pinjaman Inklusif"
+    },
+    {
+      "app": "KoinP2P",
+      "company": "PT Lunaria Annua Teknologi"
+    },
+    {
+      "app": "Pohondana",
+      "company": "PT Pohon Dana Indonesia"
+    },
+    {
+      "app": "Mekar",
+      "company": "PT Mekar Investama Teknologi"
+    },
+    {
+      "app": "AdaKami",
+      "company": "PT Pembiayaan Digital Indonesia"
+    },
+    {
+      "app": "Esta Kapital",
+      "company": "PT Esta Kapital Fintek"
+    },
+    {
+      "app": "KreditPro",
+      "company": "PT Tri Digi Fin"
+    },
+    {
+      "app": "FINTAG",
+      "company": "PT Fintegra Homido Indonesia"
+    },
+    {
+      "app": "RupiahCepat",
+      "company": "PT Kredit Utama Fintech Indonesia"
+    },
+    {
+      "app": "Crowdo",
+      "company": "PT Mediator Komunitas Indonesia"
+    },
+    {
+      "app": "Indodana",
+      "company": "PT Artha Dana Teknologi"
+    },
+    {
+      "app": "JULO",
+      "company": "PT Julo Teknologi Finansial"
+    },
+    {
+      "app": "Pinjamin",
+      "company": "PT Progo Puncak Group"
+    },
+    {
+      "app": "DanaRupiah",
+      "company": "PT Layanan Keuangan Berbagi"
+    },
+    {
+      "app": "OVO Finansial",
+      "company": "PT Indonusa Bara Sejahtera"
+    },
+    {
+      "app": "PinjamModal",
+      "company": "PT Finansial Integrasi Teknologi"
+    },
+    {
+      "app": "Alami",
+      "company": "PT Alami Fintek Sharia"
+    },
+    {
+      "app": "Awan Tunai",
+      "company": "PT Simplefi Teknologi Indonesia"
+    },
+    {
+      "app": "Danakini",
+      "company": "PT Dana Kini Indonesia"
+    },
+    {
+      "app": "Singa",
+      "company": "PT Abadi Sejahtera Finansindo"
+    },
+    {
+      "app": "Danamerdeka",
+      "company": "PT Intekno Raya"
+    },
+    {
+      "app": "Easycash",
+      "company": "PT Indonesia Fintopia Technology"
+    },
+    {
+      "app": "PinjamYuk",
+      "company": "PT Kuaikuai Tech Indonesia"
+    },
+    {
+      "app": "FinPlus",
+      "company": "PT Rezeki Bersama Teknologi"
+    },
+    {
+      "app": "Uangme",
+      "company": "PT Uangme Fintek Indonesia"
+    },
+    {
+      "app": "PinjamDuit",
+      "company": "PT Stanford Teknologi Indonesia"
+    },
+    {
+      "app": "Dana Syariah",
+      "company": "PT Dana Syariah Indonesia"
+    },
+    {
+      "app": "BATUMBU",
+      "company": "PT Berdayakan Usaha Indonesia"
+    },
+    {
+      "app": "Cashcepat",
+      "company": "PT Artha Permata Makmur"
+    },
+    {
+      "app": "KlikUMKM",
+      "company": "PT Pinjaman Kemakmuran Rakyat"
+    },
+    {
+      "app": "Pinjam Gampang",
+      "company": "PT Kredit Plus Teknologi"
+    },
+    {
+      "app": "Cicil",
+      "company": "PT Cicil Solusi Mitra Teknologi"
+    },
+    {
+      "app": "Lumbungdana",
+      "company": "PT Lumbung Dana Indonesia"
+    },
+    {
+      "app": "360 Kredi",
+      "company": "PT Inovasi Terdepan Nusantara"
+    },
+    {
+      "app": "Kredinesi",
+      "company": "PT Kreditku Teknologi Indonesia"
+    },
+    {
+      "app": "Pintek",
+      "company": "PT Pinduit Teknologi Indonesia"
+    },
+    {
+      "app": "Modal Rakyat",
+      "company": "PT Modal Rakyat Indonesia"
+    },
+    {
+      "app": "Solusiku",
+      "company": "PT Anugerah Digital Indonesia"
+    },
+    {
+      "app": "Cairin",
+      "company": "PT Idana Solusi Sejahtera"
+    },
+    {
+      "app": "TrustiQ",
+      "company": "PT Trust Teknologi Finansial"
+    },
+    {
+      "app": "Klik Kami",
+      "company": "PT Harapan Fintech Indonesia"
+    },
+    {
+      "app": "Duha Syariah",
+      "company": "PT Duha Madani Syariah"
+    },
+    {
+      "app": "Invoila",
+      "company": "PT Sol Mitra Fintec"
+    },
+    {
+      "app": "Sanders One Stop Solution",
+      "company": "PT Satustop Finansial Solusi"
+    },
+    {
+      "app": "DanaBagus",
+      "company": "PT Dana Bagus Indonesia"
+    },
+    {
+      "app": "UKU",
+      "company": "PT Teknologi Merlin Sejahtera"
+    },
+    {
+      "app": "Kredito",
+      "company": "PT Fintek Digital Indonesia"
+    },
+    {
+      "app": "AdaPundi",
+      "company": "PT Info Tekno Siaga"
+    },
+    {
+      "app": "Lentera Dana Nusantara",
+      "company": "PT Lentera Dana Nusantara"
+    },
+    {
+      "app": "Modal Nasional",
+      "company": "PT Solusi Teknologi Finansial"
+    },
+    {
+      "app": "Komunal",
+      "company": "PT Komunal Finansial Indonesia"
+    },
+    {
+      "app": "Restock.ID",
+      "company": "PT Cerita Teknologi Indonesia"
+    },
+    {
+      "app": "Avantee",
+      "company": "PT Grha Dana Bersama"
+    },
+    {
+      "app": "Gradana",
+      "company": "PT Gradana Teknoruci Indonesia"
+    },
+    {
+      "app": "Danacita",
+      "company": "PT Inclusive Finance Group"
+    },
+    {
+      "app": "IKI Modal",
+      "company": "PT IKI Karunia Indonesia"
+    },
+    {
+      "app": "Ivoji",
+      "company": "PT Finansia Aira Teknologi"
+    },
+    {
+      "app": "Indofund.id",
+      "company": "PT Bursa Akselerasi Indonesia"
+    },
+    {
+      "app": "iGrow",
+      "company": "PT LinkAja Modalin Nusantara"
+    },
+    {
+      "app": "Danai.id",
+      "company": "PT Adiwisista Finansial Teknologi"
+    },
+    {
+      "app": "DUMI",
+      "company": "PT Fidac Inovasi Teknologi"
+    },
+    {
+      "app": "LAHAN SIKAM",
+      "company": "PT Lampung Berkah Finansial Teknologi"
+    },
+    {
+      "app": "qazwa.id",
+      "company": "PT Qazwa Mitra Hasanah"
+    },
+    {
+      "app": "KrediFazz",
+      "company": "PT KrediFazz Digital Indonesia"
+    },
+    {
+      "app": "Doeku",
+      "company": "PT Doeku Peduli Indonesia"
+    },
+    {
+      "app": "Aktivaku",
+      "company": "PT Aktivaku Investama Teknologi"
+    },
+    {
+      "app": "Danain",
+      "company": "PT Mulia Inovasi Digital"
+    },
+    {
+      "app": "Indosaku",
+      "company": "PT Indosaku Digital Teknologi"
+    },
+    {
+      "app": "EDUFUND",
+      "company": "PT Fintech Bina Bangsa"
+    },
+    {
+      "app": "Gandeng Tangan",
+      "company": "PT Kreasi Anak Indonesia"
+    },
+    {
+      "app": "PAPITUPI Syariah",
+      "company": "PT Piranti Alphabet Perkasa"
+    },
+    {
+      "app": "Bantu Saku",
+      "company": "PT Smartec Teknologi Indonesia"
+    },
+    {
+      "app": "Danabijak",
+      "company": "PT Digital Micro Indonesia"
+    },
+    {
+      "app": "AdaModal",
+      "company": "PT Solid Fintek Indonesia"
+    },
+    {
+      "app": "Samakita",
+      "company": "PT Sejahtera Sama Kita"
+    },
+    {
+      "app": "KawanCicil",
+      "company": "PT Kawan Cicil Teknologi Utama"
+    },
+    {
+      "app": "KlikCair",
+      "company": "PT Klikcair Magga Jaya"
+    },
+    {
+      "app": "ETHIS",
+      "company": "PT Ethis Fintek Indonesia"
+    },
+    {
+      "app": "SAMIR",
+      "company": "PT Sahabat Mikro Fintek"
+    },
+    {
+      "app": "UATAS",
+      "company": "PT Plus Ultra Abadi"
+    },
+    {
+      "app": "Asetku",
+      "company": "PT Pintar Inovasi Digital"
+    },
+    {
+      "app": "Findaya",
+      "company": "PT Mapan Global Reksa"
+    }
+  ],
+  "scamHashes": []
+}

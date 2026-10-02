@@ -2,11 +2,12 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { checkLegality, describeLegality } from '../utils/checkLegality';
-import { DATA_SNAPSHOT_DATE } from '../data/ojkLegalList';
+import { getActiveData } from '../utils/dataPack';
 import { cardShadow, theme } from '../styles/theme';
 
 export default function LenderScreen({ entityName, onBack }) {
   const result = checkLegality(entityName);
+  const { meta } = getActiveData();
   const status = result.status === 'skipped' || (result.status === 'not_found' && result.reason === 'input_too_short')
     ? 'unknown'
     : result.status;
@@ -48,7 +49,7 @@ export default function LenderScreen({ entityName, onBack }) {
       </View>
 
       <Text style={styles.disclaimer}>
-        {DATA_SNAPSHOT_DATE} — Always confirm directly with OJK before transferring money.
+        Data version {meta.version}, snapshot {formatSnapshotDate(meta.snapshotDate)}{meta.isExpired ? '. This list may be outdated. Confirm with OJK.' : '. Always confirm directly with OJK before transferring money.'}
       </Text>
     </View>
   );
@@ -82,3 +83,8 @@ const styles = StyleSheet.create({
   finding: { color: theme.textPrimary, fontSize: 14, lineHeight: 21, marginTop: 10 },
   disclaimer: { color: theme.textSecondary, fontSize: 11, lineHeight: 16, marginTop: 14 },
 });
+
+function formatSnapshotDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'unknown date' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}

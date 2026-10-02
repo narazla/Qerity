@@ -15,7 +15,8 @@
         "foregroundImage": "./assets/branding/qerity-icon.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "package": "com.qerity.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -23,6 +24,11 @@
     "plugins": [
       "expo-status-bar",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7c643350-d85f-4ec4-9174-2de712e66a3d"
+      }
+    }
   }
 }

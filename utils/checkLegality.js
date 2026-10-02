@@ -1,4 +1,4 @@
-import { OJK_LEGAL_LIST } from '../data/ojkLegalList';
+import { getActiveData } from './dataPack';
 
 function normalize(str) {
   return (str || '')
@@ -47,14 +47,15 @@ export function checkLegality(inputName) {
     return { status: 'not_found', reason: 'input_too_short' };
   }
 
-  const exactMatch = OJK_LEGAL_LIST.find((entry) => {
+  const { ojk } = getActiveData();
+  const exactMatch = ojk.find((entry) => {
     const app = normalize(entry.app);
     const company = normalize(entry.company);
     return app === query || company === query;
   });
   if (exactMatch) return { status: 'legal', match: exactMatch };
 
-  const similarMatch = OJK_LEGAL_LIST
+  const similarMatch = ojk
     .flatMap((entry) => [entry.app, entry.company].map((name) => ({ entry, name: normalize(name) })))
     .map(({ entry, name }) => {
       const ratio = similarityRatio(query, name);

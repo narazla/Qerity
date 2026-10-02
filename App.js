@@ -9,6 +9,7 @@ import AboutScreen from './screens/AboutScreen';
 import LenderScreen from './screens/LenderScreen';
 import HistoryScreen from './screens/HistoryScreen';
 import { theme } from './styles/theme';
+import { initializeDataPack } from './utils/dataPack';
 
 export default function App() {
   const [screen, setScreen] = useState('splash');
@@ -16,6 +17,7 @@ export default function App() {
   const [entityName, setEntityName] = useState('');
 
   useEffect(() => {
+    initializeDataPack();
     const timer = setTimeout(() => setScreen('home'), 1800);
     return () => clearTimeout(timer);
   }, []);
