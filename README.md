@@ -77,7 +77,9 @@ This check does not require an image and can be used as a standalone, instant lo
 | Custom fonts | `expo-font` `~57.0.4` |
 | Status bar | `expo-status-bar` `~57.0.1` |
 | In-app image analysis | `react-native-webview` `13.16.1` (Canvas API, HTML/JavaScript) — used for Error Level Analysis and perceptual hashing |
+| Signed data pack verification | `tweetnacl` `1.0.3` Ed25519 verification |
 | Local scan history | `@react-native-async-storage/async-storage` `2.2.0` |
+| Pack tests | Node `node:test` and `node:assert` |
 | Design system | `styles/theme.js` — shared color tokens, used across all screens |
 | Application entry point | `index.js` with Expo's `registerRootComponent` |
 | Package manager | npm, based on `package-lock.json` |
@@ -103,7 +105,10 @@ qerity/
 │       └── qerity-banner.png       # Qerity banner, used in README
 ├── data/
 │   ├── ojkLegalList.js             # OJK-licensed lender snapshot (name, company, snapshot date)
-│   └── knownScamHashes.js          # Bundled sample scam-image hashes (placeholder, not yet populated)
+│   ├── knownScamHashes.js          # Bundled sample scam-image hashes (placeholder, not yet populated)
+│   └── publicKey.js                # Embedded Ed25519 public key for data packs
+├── publish/                        # Published datapack.json and datapack.sig
+├── scripts/                        # Data pack key, build, and signing scripts
 ├── screens/
 │   ├── SplashScreen.js             # App splash screen
 │   ├── HomeScreen.js               # Image input, lender name input, and entry point to all other screens
@@ -115,7 +120,12 @@ qerity/
 │   └── theme.js                    # Shared design tokens (colors, used across all screens)
 └── utils/
     ├── checkLegality.js            # Name normalization, exact/similarity matching against the OJK list
-    └── scanHistory.js              # AsyncStorage read/write for local scan history
+    ├── dataPack.js                 # Cached data pack loading and update checks
+    ├── scanHistory.js              # AsyncStorage read/write for local scan history
+    └── verifyPack.js               # Pure JavaScript Ed25519 pack verification
+├── tests/
+│   └── verifyPack.test.js          # Signed pack verification tests
+└── SECURITY.md                     # Threat model and security roadmap
 ```
 
 ## 🚀 Local Setup
@@ -158,6 +168,12 @@ Run this from the folder containing `package.json`:
 
 ```bash
 npm install
+```
+
+### Run tests
+
+```bash
+npm run test:pack
 ```
 
 After installing, you can optionally run a project health check:
@@ -307,6 +323,7 @@ The list is a limited snapshot. The input should match an application name or co
 ## ⚠️ Known Limitations
 
 - The OJK list is a **July 2026 snapshot** from a secondary source, not data fetched in real time from `ojk.go.id`.
+- Refreshed signed data packs are published manually by the maintainer.
 - ELA is **less effective for PNG images** and images that have been screenshotted or compressed repeatedly.
 - The **duplicate detection database is limited**. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
 - The **duplicate detection scope is self-contained**: it only compares against the user's own scan history and the bundled sample set, not a broader external database.
@@ -321,18 +338,20 @@ The list is a limited snapshot. The input should match an application name or co
 
 - Add **AI-generated image detection** using a validated pretrained model.
 - Add **quantum-inspired or tensor-train model compression** for lighter on-device processing.
-- **Automatically update the OJK list** from an official source.
+- A signed update channel exists. Scheduled refresh from an official source remains future work.
 - **Physical device testing** for the standalone Android APK, beyond the current emulator-only testing.
 
 ## 🔒 Security & Privacy
 
-- **No backend server.** Qerity does not send scanned images anywhere. All image analysis (EXIF inspection, ELA, perceptual hashing) runs entirely on-device, including inside the local WebView used for ELA and hash computation.
-- **No accounts, no login.** There is no user registration, authentication, or server-side user data. This is a deliberate design choice: for a tool used in urgent, high-pressure moments, removing accounts reduces the attack surface rather than adding a layer of protection that isn't needed.
-- **Images are never stored**, on-device or elsewhere. Only the user's opt-in scan history retains metadata: a perceptual hash, timestamp, verdict level, and (if provided) lender name and legality status — never the image itself.
-- **Local-only storage.** When a user opts in ("Save this hash to local scan history"), data is written to `AsyncStorage` on the device and is never transmitted. This data is cleared automatically if the app is uninstalled or its storage is cleared manually.
-- **No analytics or tracking.** The app does not integrate any third-party analytics, crash reporting, or advertising SDKs.
-- **OJK data is static and bundled**, not fetched live, so no network request is made for the legality check itself.
-- **Demo hygiene:** when demonstrating the app, avoid entering real personal data (real account numbers, real names) in test images or lender name inputs — use redacted or synthetic examples instead.
+- Core analysis runs fully offline with bundled data. The app can optionally download a public, signed data file and uses it only if the signature is valid.
+- Qerity never sends images, lender names, or scan history.
+- **No accounts, no login.** There is no user registration, authentication, or server-side user data.
+- Images are processed temporarily on the device and are not stored by the app. Opt-in scan history stores metadata locally.
+- **Local-only storage.** Scan history is written to `AsyncStorage` on the device and is not transmitted.
+- **No analytics or tracking.** The app does not integrate third-party analytics, crash reporting, or advertising SDKs.
+- Automatic updates can be switched off in the About screen.
+- **Demo hygiene:** when demonstrating the app, avoid entering real personal data in test images or lender name inputs.
+- For the full threat model and security roadmap, see [SECURITY.md](SECURITY.md).
 
 ## 👥 Meet the Team
 
