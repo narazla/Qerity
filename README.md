@@ -320,11 +320,27 @@ The list is a limited snapshot. The input should match an application name or co
 - **OJK data is static and bundled**, not fetched live, so no network request is made for the legality check itself.
 - **Demo hygiene:** when demonstrating the app, avoid entering real personal data (real account numbers, real names) in test images or lender name inputs — use redacted or synthetic examples instead.
 
-## Meet the Team
+## 👥 Meet the Team
 
-<a href="#"><img width="144px" height="180px" src="https://drive.google.com/uc?export=view&id=17JzgCaF45gCTXnlIglXVKpq05sTQq5Vx" alt=""/></a> | <a href="#"><img width="144px" height="180px" src="https://drive.google.com/uc?export=view&id=1m_6xGOwyi8lrIhjr2Q3pqw9OhHdjtyOq" alt=""/></a> | <a href="#"><img width="144px" height="180px" src="https://drive.google.com/uc?export=view&id=1kbe9CbYZBaLMgQ-PSwiz179-lZVjKZ9v" alt=""/></a> |
-| --- | --- | --- |
-| <div align="left"><h3><b>Muhammad Aris Maulana</b></h3></div> | <div align="left"><h3><b>Nazla Azzahra Hermana</b></h3></div> | <div align="left"><h3><b>Ladya Kalascha</b></h3></div> |
+<table>
+<tr>
+<td align="center" width="33%">
+<img src="https://drive.google.com/uc?export=view&id=17JzgCaF45gCTXnlIglXVKpq05sTQq5Vx" width="144" height="180"/><br/>
+<a href="https://github.com/Arieslana01"><b>Muhammad Aris Maulana</b></a><br/>
+<i>Universitas Diponegoro</i>
+</td>
+<td align="center" width="33%">
+<img src="https://drive.google.com/uc?export=view&id=1rPzNkUuXtFebZFcrLa7c-ZtZlSnxa0jX" width="144" height="180"/><br/>
+<a href="https://github.com/narazla"><b>Nazla Azzahra Hermana</b></a><br/>
+<i>Universitas Diponegoro</i>
+</td>
+<td align="center" width="33%">
+<img src="https://drive.google.com/uc?export=view&id=1kbe9CbYZBaLMgQ-PSwiz179-lZVjKZ9v" width="144" height="180"/><br/>
+<a href="https://github.com/ladyfanning001"><b>Ladya Kalascha</b></a><br/>
+<i>Universitas Diponegoro</i>
+</td>
+</tr>
+</table>
 
 ---
 
