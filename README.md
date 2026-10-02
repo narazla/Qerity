@@ -58,13 +58,13 @@ Inputs that are **too short are rejected** to reduce false matches. Legality res
 
 | Layer | Technology |
 | --- | --- |
-| Mobile framework | Expo SDK 54 (`expo` `~54.0.34`) |
-| UI runtime | React `19.1.0`, React Native `0.81.5` |
-| Image input | `expo-image-picker` `~17.0.11` |
-| Gradient/UI styling | `expo-linear-gradient` `~15.0.7` |
-| Status bar | `expo-status-bar` `~3.0.8` |
-| In-app image analysis | `react-native-webview` `13.15.0`, Canvas API, HTML/JavaScript |
-| Local scan history | `@react-native-async-storage/async-storage` `^3.1.1` |
+| Mobile framework | Expo SDK 57 (`expo` `^57.0.26`) |
+| UI runtime | React `19.2.3`, React Native `0.86.3` |
+| Image input | `expo-image-picker` `~57.0.20` |
+| Gradient/UI styling | `expo-linear-gradient` `~57.0.2` |
+| Status bar | `expo-status-bar` `~57.0.1` |
+| In-app image analysis | `react-native-webview` `13.16.1`, Canvas API, HTML/JavaScript |
+| Local scan history | `@react-native-async-storage/async-storage` `2.2.0` |
 | Application entry point | `index.js` with Expo's `registerRootComponent` |
 | Package manager | npm, based on `package-lock.json` |
 
@@ -99,7 +99,7 @@ qerity/
 
 Before starting, prepare:
 
-1. **Node.js 20.x LTS** or another LTS version compatible with Expo SDK 54.
+1. **Node.js 20.x LTS** or another LTS version compatible with Expo SDK 57.
 2. **npm**, normally installed with Node.js.
 3. **Expo Go** on Android or iPhone to run the application through the development server.
 4. A laptop and phone on the same Wi-Fi network when using a LAN connection.
@@ -197,7 +197,7 @@ Do not rely on this section as submission instructions until `eas.json`, the pac
 
 - Run `npx expo-doctor`.
 - Make sure Expo Go is up to date.
-- Make sure the Expo dependencies use the versions in `package.json`, especially Expo SDK `54.0.34`.
+- Make sure the Expo dependencies use the versions in `package.json`, especially Expo SDK `57.0.26`.
 - Remove and reinstall dependencies if necessary:
 
 ```bash
