@@ -9,7 +9,7 @@ function normalize(str) {
     .trim();
 }
 
-function levenshtein(a, b) {
+function distance(a, b) {
   const row = Array.from({ length: b.length + 1 }, (_, index) => index);
   for (let i = 1; i <= a.length; i += 1) {
     let previous = row[0];
@@ -26,6 +26,16 @@ function levenshtein(a, b) {
   }
   return row[b.length];
 }
+
+function similarityRatio(a, b) {
+  const dist = distance(a, b);
+  const maxLen = Math.max(a.length, b.length);
+  if (maxLen === 0) return 1;
+  return 1 - dist / maxLen;
+}
+
+const SIMILARITY_RATIO_THRESHOLD = 0.8; // Heuristic; calibrate with real lender-name variations.
+const MAX_SIMILAR_LENGTH_DIFFERENCE = 2; // Heuristic; prevents short unrelated names from matching.
 
 export function checkLegality(inputName) {
   if (!inputName || !inputName.trim()) {
@@ -44,24 +54,47 @@ export function checkLegality(inputName) {
   });
   if (exactMatch) return { status: 'legal', match: exactMatch };
 
-  // Approximate 20% distance is a heuristic and should be calibrated with real names.
   const similarMatch = OJK_LEGAL_LIST
-    .map((entry) => {
-      const candidates = [normalize(entry.app), normalize(entry.company)];
-      const distance = Math.min(...candidates.map((candidate) => levenshtein(query, candidate)));
-      const maxLength = Math.max(query.length, ...candidates.map((candidate) => candidate.length));
-      return { entry, distance, maxLength };
+    .flatMap((entry) => [entry.app, entry.company].map((name) => ({ entry, name: normalize(name) })))
+    .map(({ entry, name }) => {
+      const ratio = similarityRatio(query, name);
+      const lengthDifference = Math.abs(query.length - name.length);
+      const shorterLength = Math.min(query.length, name.length);
+      const contains = shorterLength >= 5 && (query.includes(name) || name.includes(query));
+      return {
+        entry,
+        distance: distance(query, name),
+        ratio,
+        qualifies: (ratio >= SIMILARITY_RATIO_THRESHOLD && lengthDifference <= MAX_SIMILAR_LENGTH_DIFFERENCE) || contains,
+      };
     })
-    .filter(({ distance, maxLength }) => distance <= Math.max(1, Math.ceil(maxLength * 0.2)))
-    .sort((a, b) => a.distance - b.distance)[0];
+    .filter((candidate) => candidate.qualifies)
+    .sort((a, b) => b.ratio - a.ratio || a.distance - b.distance)[0];
 
   if (similarMatch) {
     return {
       status: 'similar',
       match: similarMatch.entry,
       distance: similarMatch.distance,
+      similarity: similarMatch.ratio,
     };
   }
 
   return { status: 'not_found' };
+}
+
+export function describeLegality(result, inputName) {
+  if (result.status === 'legal') {
+    return `"${result.match.app}" (${result.match.company}) appears in the OJK list.`;
+  }
+  if (result.status === 'similar') {
+    return `"${inputName}" is similar to "${result.match.app}", but the names do not match exactly.`;
+  }
+  if (result.status === 'not_found' && result.reason === 'input_too_short') {
+    return 'Please enter at least 3 characters.';
+  }
+  if (result.status === 'not_found') {
+    return `"${inputName}" was not found in the limited OJK list.`;
+  }
+  return 'Please enter a lender or company name.';
 }
