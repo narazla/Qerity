@@ -383,14 +383,10 @@ A valid signature proves the pack came from the maintainer's key; it does not pr
 - Refreshed signed data packs are published manually by the maintainer.
 - ELA is **less effective for PNG images** and images that have been screenshotted or compressed repeatedly.
 - EXIF editing detection uses an **allowlist of known editor names**, so tools not on the list are not flagged. This was chosen to reduce false positives (for example, iOS version strings).
-- The **duplicate detection database is limited**. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
-- The **duplicate detection scope is self-contained**: it only compares against the user's own saved scan history and the bundled sample set, not a broader external database.
-- All analysis results are **probabilistic signals**, not certainty.
-- ELA and duplicate matching thresholds are **heuristics** and require calibration with real test data.
+- The **test set is small**: 20 entries (10 manipulated, 5 recompressed, 5 scam samples), listed in the [Qerity - Test Set](https://docs.google.com/spreadsheets/d/1bXxyj06TkWOSVD-j72PC_LQJcE3h0pQ-Qb9F4lVHz9U/edit?usp=sharing) sheet. It is not yet a curated real-world scam dataset.
 - The **OJK legality snapshot can change**; new entities, revoked entities, or renamed entities are not automatically reflected.
 - **APK distribution risk (threat T5):** the APK is distributed outside Google Play, so a third party could repackage it and replace the embedded public key. We publish the APK SHA-256, the signing-certificate fingerprint, and an SBOM, so a modified APK can be detected by users who check. There is no automatic detection, and most users will not check. Google Play distribution and build provenance are planned. See [SECURITY.md](SECURITY.md).
 - `npm audit` reports findings (braces, node-forge, uuid) that are reachable only through Expo build tooling, not through the app's runtime code. The suggested forced fix would downgrade Expo to an incompatible major version and was not applied. Details are in [SECURITY.md](SECURITY.md).
-- The data pack is hosted on GitHub; the host can observe the device IP address and request time. This can be disabled in the About screen.
 - The app **does not use user accounts or login**; scan history is stored locally per device and is not synced or backed up.
 - **iOS builds were not tested as standalone apps**; development and testing were done exclusively through Expo Go, since the team primarily uses iOS devices.
 - The **standalone Android APK has only been tested on an emulator** (Android Studio, Pixel 6), not yet on a physical Android device.
