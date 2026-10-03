@@ -50,7 +50,7 @@ async function fetchText(url) {
   try {
     const response = await fetch(url, controller ? { signal: controller.signal } : undefined);
     if (!response.ok) throw new Error(`http_${response.status}`);
-    return response.text();
+    return await response.text();
   } finally {
     clearTimeout(timeout);
   }

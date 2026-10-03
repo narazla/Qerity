@@ -328,12 +328,12 @@ function analyzeExif(exif) {
       risk: true,
     });
   }
-
-  function formatSnapshotDate(value) {
-    const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? 'unknown date' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  }
   return findings;
+}
+
+function formatSnapshotDate(value) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? 'unknown date' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 
 const styles = StyleSheet.create({
