@@ -68,10 +68,13 @@ export default function ResultScreen({ asset, entityName, onBack }) {
 
   useEffect(() => {
     if (!analysis || !analysis.hash || statuses.dup !== 'running') return undefined;
-    compareAndStoreHash(analysis.hash).then((result) => {
+    compareAndStoreHash(analysis.hash, knownScamHashes).then((result) => {
       setDuplicateResult(result);
       setStatuses((current) => ({ ...current, dup: 'done' }));
-    }).catch(() => setStatuses((current) => ({ ...current, dup: 'error' })));
+    }).catch((e) => {
+  console.log('DUP ERROR:', e?.message);
+  setStatuses((current) => ({ ...current, dup: 'error' }));
+});
     return undefined;
   }, [analysis, statuses.dup]);
 
@@ -292,12 +295,12 @@ export default function ResultScreen({ asset, entityName, onBack }) {
   );
 }
 
-async function compareAndStoreHash(hash) {
+async function compareAndStoreHash(hash, scamHashes) {
   const rawHistory = await AsyncStorage.getItem(HISTORY_KEY);
   const history = rawHistory ? JSON.parse(rawHistory) : [];
   const sources = [
     ...history.map((item) => ({ ...item, source: 'history' })),
-    ...knownScamHashes.map((item) => ({ ...item, source: 'known' })),
+    ...(Array.isArray(scamHashes) ? scamHashes : []).map((item) => ({ ...item, source: 'known' })),
   ];
   const match = sources
     .map((item) => ({ ...item, distance: hammingDistance(hash, item.hash) }))
@@ -319,16 +322,22 @@ function hammingDistance(a, b) {
   return Array.from(a).reduce((distance, bit, index) => distance + (bit !== b[index] ? 1 : 0), 0);
 }
 
+const EDITOR_PATTERN = /photoshop|lightroom|adobe|gimp|canva|snapseed|picsart|pixlr|photoroom|facetune|fotor|befunky|vsco|krita|affinity|paint\.net|figma|capcut|inshot|picsay/i;
+
 function analyzeExif(exif) {
-  const findings = [];
   const software = exif && (exif.Software || exif.software || (exif.TIFF && (exif.TIFF.Software || exif.TIFF.software)) || (exif.Exif && (exif.Exif.Software || exif.Exif.software)));
-  if (software) {
-    findings.push({
-      text: `Software metadata detected: ${software}. This is a suspicious signal, not proof of manipulation.`,
+  if (!software) return [];
+  const value = String(software);
+  if (EDITOR_PATTERN.test(value)) {
+    return [{
+      text: `Editing software found in metadata: ${value}. This is a signal, not proof of manipulation.`,
       risk: true,
-    });
+    }];
   }
-  return findings;
+  return [{
+    text: `Software tag "${value}" looks like a device or OS version, not an editing tool. Not treated as a risk.`,
+    risk: false,
+  }];
 }
 
 function formatSnapshotDate(value) {
