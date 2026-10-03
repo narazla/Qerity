@@ -12,7 +12,7 @@
 
 <div align="center">
 
-**[Download Android APK (Pre-release)](https://github.com/narazla/Qerity/releases/latest)**
+**[Download Android APK (v2.0.0)](https://github.com/narazla/Qerity/releases/latest)**
 
 </div>
 
@@ -20,7 +20,7 @@
 
 Qerity is a mobile app that helps people verify suspicious loan-related content before making a financial decision. Illegal online lending (*pinjol ilegal*) in Indonesia relies heavily on manipulated content like fake loan advertisements, fabricated transfer receipts, and staged testimonials to pressure victims into transferring money quickly. Victims in urgent need of funds rarely have time to verify what they're seeing before it's too late.
 
-Rather than requiring users to navigate multiple separate channels (manual OJK lookups, basic image inspection, asking around for second opinions), Qerity consolidates these checks into a single scan. Users upload or photograph suspicious content, and within seconds receive a breakdown of findings across four independent signals: image metadata, visual editing patterns, duplicate/known-scam matching, and lender legality against OJK's official registry.
+Rather than requiring users to navigate multiple separate channels (manual OJK lookups, basic image inspection, asking around for second opinions), Qerity consolidates these checks into a single scan. Users upload or photograph suspicious content, and within seconds receive a breakdown of findings across four independent signals: image metadata, visual editing patterns, duplicate/known-scam matching, and lender legality against a snapshot of OJK's list of licensed lenders.
 
 Qerity does not produce a final judgment of "real" or "fake." Each signal is reported on its own, with plain-language explanations, and the app consistently directs users to confirm further with OJK before making any financial decision. This is a deliberate design choice: in a track focused on human-centric security, the goal is to reduce the friction and delay that scammers exploit, not to replace a user's own judgment with false certainty.
 
@@ -46,17 +46,17 @@ Qerity provides two core features. The first, on-device image forensics, runs **
 
 Given a photo or screenshot, Qerity runs three lightweight forensic signals locally on the device:
 
-- **EXIF metadata inspection** — checks the file's embedded metadata for signs of prior editing (e.g. a populated `Software` field). Missing EXIF is treated as **neutral**, not suspicious, since screenshots and images re-sent through messaging or social apps routinely lose this metadata; its presence or absence alone is never treated as proof of authenticity.
+- **EXIF metadata inspection** — checks the `Software` field of the file's metadata for known editing tools (e.g. Photoshop, Canva, Snapseed). Device or OS version strings, such as an iOS version number, are recognized and **not** treated as a risk. Missing EXIF is treated as **neutral**, not suspicious, since screenshots and images re-sent through messaging or social apps routinely lose this metadata; its presence or absence alone is never treated as proof of authenticity.
 - **Error Level Analysis (ELA)** — recompresses the image and visualizes compression-level differences as a heatmap, surfacing regions that may have been pasted in or edited. This runs in a WebView using the Canvas API, with a **12-second timeout**: if analysis doesn't complete in time, the check is reported as unavailable rather than silently treated as a clean result. ELA is less effective on PNG files or images that have been screenshotted and recompressed repeatedly.
-- **Duplicate / similarity matching** — computes a 64-bit perceptual hash (dHash) of the image and compares it, via Hamming distance, against the user's own scan history and a small bundled sample set of known scam content. **Not finding a match is not evidence that the image is genuine or unique** — it only means nothing matched what Qerity has seen so far.
+- **Duplicate / similarity matching** — computes a 64-bit perceptual hash (dHash) of the image and compares it, via Hamming distance, against the user's own scan history (if the user chose to save it) and a small bundled sample set of known scam content. **Not finding a match is not evidence that the image is genuine or unique** — it only means nothing matched what Qerity has seen so far.
 
-These three signals are combined into a single risk level (low / medium / high) with plain-language reasons, never a binary "real" or "fake" verdict.
+These signals are combined into a single risk level (low / medium / high) with plain-language reasons, never a binary "real" or "fake" verdict.
 
 ### 2. Lender Legality Check (OJK)
 
-Given a lender or company name — entered on its own or alongside an image — Qerity checks it against a snapshot of OJK's official list of licensed lending entities, using exact and fuzzy (similarity-based) matching:
+Given a lender or company name — entered on its own or alongside an image — Qerity checks it against a snapshot of OJK's list of licensed lending entities, using exact and fuzzy (similarity-based) matching:
 
-- **Exact match** → reported as verified against the snapshot.
+- **Exact match** → reported as appearing in the snapshot.
 - **Similar but not exact** (e.g. a scam name imitating a real one, like "Danamas Cepat Cair" vs. "Danamas") → flagged explicitly as a near-match, not treated as verified.
 - **No match found** → flagged as not found in the snapshot; this does not confirm the entity is illegal, only that it isn't in Qerity's current data.
 
@@ -64,7 +64,7 @@ This check does not require an image and can be used as a standalone, instant lo
 
 ---
 
-**Out of scope for this version:** AI-generated image detection and quantum-inspired model compression are not part of the current analysis flow — see [Roadmap](#roadmap--future-work) below.
+**Out of scope for this version:** AI-generated image detection and quantum-inspired model compression are not part of the current analysis flow — see [Roadmap](#️-roadmap--future-work) below.
 
 ## ⚙️ Tech Stack
 
@@ -95,14 +95,16 @@ qerity/
 ├── package.json                    # npm dependencies and scripts
 ├── package-lock.json               # npm dependency lockfile
 ├── .gitignore                      # Local files/folders excluded from Git
+├── .gitattributes                  # Keeps publish/ bytes unchanged so pack signatures stay valid
+├── SECURITY.md                     # Threat model and security roadmap
 ├── assets/
 │   ├── elaHtml.js                  # WebView HTML/JS: Error Level Analysis + perceptual dHash
 │   ├── icon.png, favicon.png,
 │   │   splash-icon.png,
 │   │   android-icon-*.png          # Default Expo-generated app icon assets
 │   └── branding/
-│       ├── qerity-icon.png         # Qerity logo, used in README and in-app headers
-│       └── qerity-banner.png       # Qerity banner, used in README
+│       ├── qerity-icon.png         # Qerity logo, used in-app headers
+│       └── qerity-banner.png       # Qerity banner
 ├── data/
 │   ├── ojkLegalList.js             # OJK-licensed lender snapshot (name, company, snapshot date)
 │   ├── knownScamHashes.js          # Bundled sample scam-image hashes (placeholder, not yet populated)
@@ -115,26 +117,25 @@ qerity/
 │   ├── ResultScreen.js             # Forensic signal results, OJK legality card, and combined verdict
 │   ├── LenderScreen.js             # Standalone lender legality check (no image required)
 │   ├── HistoryScreen.js            # Local scan history (metadata only, no images stored)
-│   └── AboutScreen.js              # "How it Works" onboarding carousel
+│   └── AboutScreen.js              # "How it Works" onboarding carousel and automatic-update toggle
 ├── styles/
 │   └── theme.js                    # Shared design tokens (colors, used across all screens)
-└── utils/
-    ├── checkLegality.js            # Name normalization, exact/similarity matching against the OJK list
-    ├── dataPack.js                 # Cached data pack loading and update checks
-    ├── scanHistory.js              # AsyncStorage read/write for local scan history
-    └── verifyPack.js               # Pure JavaScript Ed25519 pack verification
-├── tests/
-│   └── verifyPack.test.js          # Signed pack verification tests
-└── SECURITY.md                     # Threat model and security roadmap
+├── utils/
+│   ├── checkLegality.js            # Name normalization, exact/similarity matching against the OJK list
+│   ├── dataPack.js                 # Cached data pack loading and update checks
+│   ├── scanHistory.js              # AsyncStorage read/write for local scan history
+│   └── verifyPack.js               # Pure JavaScript Ed25519 pack verification
+└── tests/
+    └── verifyPack.test.js          # Signed pack verification tests
 ```
 
 ## 🚀 Local Setup
 
 ### Quick Start (No Setup Required)
 
-If you just want to try the app without setting up a development environment, download the standalone APK from [Releases](https://github.com/narazla/Qerity/releases/latest) and install it directly on an Android device (enable "Install from unknown sources" if prompted).
+If you just want to try the app without setting up a development environment, download the standalone APK from [Releases](https://github.com/narazla/Qerity/releases/latest) and install it directly on an Android device (enable "Install from unknown sources" if prompted). Before installing, verify the file hash (see [Verify your download](#verify-your-download)).
 
-> **Note:** This build was tested on an Android Studio emulator (Pixel 6, API 37.2) and has not yet been tested on a physical Android device. Primary development and testing throughout this project was done via Expo Go, since the team develops on iOS devices.
+> **Note:** This build was tested on an Android Studio emulator (Pixel 6) and has not yet been tested on a physical Android device. Primary development and testing throughout this project was done via Expo Go, since the team develops on iOS devices.
 
 The rest of this section covers running the project from source.
 
@@ -221,11 +222,11 @@ Press `a` in the Expo terminal to open the app on the active Android emulator.
 
 ### Testing the standalone APK on an emulator
 
-Instead of a physical device, you can also install the standalone APK (see [Standalone APK](#standalone-apk-no-expo-go-required) below) on an Android Studio emulator:
+Instead of a physical device, you can also install the standalone APK (see [Standalone APK](#standalone-apk-no-expo-go-required) below) on an Android Studio emulator, or simply drag the `.apk` file onto the emulator window:
 
 ```bash
 adb devices                    # confirm the emulator is listed with status "device"
-adb install path\to\qerity.apk
+adb install -r path\to\qerity-v2.apk
 ```
 
 ### Standalone APK (No Expo Go Required)
@@ -243,6 +244,28 @@ eas build --platform android --profile preview
 This uses the `preview` profile defined in `eas.json`, configured to produce an installable `.apk` file rather than the Play Store `.aab` format. The build runs on Expo's servers and typically takes 10–20 minutes; once complete, a download link is provided in the terminal and on the [EAS dashboard](https://expo.dev/accounts/nazlaazzahra/projects/qerity).
 
 > **Note:** iOS standalone builds require an active Apple Developer Program membership and are out of scope for this submission. iOS testing was done exclusively through Expo Go.
+
+### Verify your download
+
+Qerity is distributed as an APK outside Google Play, so check the file before installing it. Only download Qerity from this repository's Releases page.
+
+| File | SHA-256 |
+| --- | --- |
+| `qerity-v2.apk` | `4777C692F8BB9A6FA55F14C110BCF60EFF57B9313A78D88A4F1696B1F1A8871A` |
+
+Windows (PowerShell):
+
+```powershell
+Get-FileHash .\qerity-v2.apk -Algorithm SHA256
+```
+
+macOS / Linux:
+
+```bash
+shasum -a 256 qerity-v2.apk
+```
+
+If the hash does not match, do not install the file. The same hash is published in the release notes. A matching hash shows the file is identical to the one we released; it is not a substitute for installing from a trusted source.
 
 ### Troubleshooting
 
@@ -320,31 +343,58 @@ Sign in with the same account used in Expo Go, then retry `npx expo start`.
 
 The list is a limited snapshot. The input should match an application name or company name listed in the snapshot. Verify the result directly through official OJK channels.
 
+## 📦 Signed Data Pack
+
+The OJK list and known-scam hashes can be refreshed without shipping a new APK. The app downloads `publish/datapack.json` and `publish/datapack.sig` and uses them only if:
+
+- the Ed25519 signature is valid for the public key embedded in the app,
+- the pack has a newer version than any version seen before (rollback protection),
+- the pack has not expired.
+
+Otherwise the app keeps its bundled data. Automatic updates can be switched off in the About screen, after which the app makes no network request.
+
+Current pack: **version 2**, OJK snapshot July 2026 (secondary source), expires 2027-01-01.
+
+| File | SHA-256 |
+| --- | --- |
+| `publish/datapack.json` | `7C9ECDB7748AC79FE549C10A66E8DA27CE312F6AFDF025D7F439664B9665CE78` |
+| `publish/datapack.sig` | `A2CBA88DC6128BDD5116E6F9398209BDB80F4F1A804395B794C46DD45F34D2AC` |
+
+A valid signature proves the pack came from the maintainer's key; it does not prove the content is complete or official. Packs are currently built and signed manually. See [SECURITY.md](SECURITY.md) for the trust model and maintainer runbook.
+
 ## ⚠️ Known Limitations
 
 - The OJK list is a **July 2026 snapshot** from a secondary source, not data fetched in real time from `ojk.go.id`.
 - Refreshed signed data packs are published manually by the maintainer.
 - ELA is **less effective for PNG images** and images that have been screenshotted or compressed repeatedly.
+- EXIF editing detection uses an **allowlist of known editor names**, so tools not on the list are not flagged. This was chosen to reduce false positives (for example, iOS version strings).
 - The **duplicate detection database is limited**. `data/knownScamHashes.js` is a placeholder and does not yet contain a curated real-world scam dataset.
-- The **duplicate detection scope is self-contained**: it only compares against the user's own scan history and the bundled sample set, not a broader external database.
+- The **duplicate detection scope is self-contained**: it only compares against the user's own saved scan history and the bundled sample set, not a broader external database.
 - All analysis results are **probabilistic signals**, not certainty.
 - ELA and duplicate matching thresholds are **heuristics** and require calibration with real test data.
 - The **OJK legality snapshot can change**; new entities, revoked entities, or renamed entities are not automatically reflected.
+- **APK distribution risk (threat T5):** the APK is distributed outside Google Play, so a third party could repackage it. We publish its SHA-256 hash; certificate fingerprint, SBOM, build provenance, and Play distribution are planned. See [SECURITY.md](SECURITY.md).
+- The data pack is hosted on GitHub; the host can observe the device IP address and request time. This can be disabled in the About screen.
 - The app **does not use user accounts or login**; scan history is stored locally per device and is not synced or backed up.
 - **iOS builds were not tested as standalone apps**; development and testing were done exclusively through Expo Go, since the team primarily uses iOS devices.
-- The **standalone Android APK has only been tested on an emulator** (Android Studio, Pixel 6, API 37.2), not yet on a physical Android device.
+- The **standalone Android APK has only been tested on an emulator** (Android Studio, Pixel 6), not yet on a physical Android device.
 
 ## 🗺️ Roadmap / Future Work
 
-- Add **AI-generated image detection** using a validated pretrained model.
-- Add **quantum-inspired or tensor-train model compression** for lighter on-device processing.
-- A signed update channel exists. Scheduled refresh from an official source remains future work.
-- **Physical device testing** for the standalone Android APK, beyond the current emulator-only testing.
+- Scheduled data pack refresh from an official OJK source, with human review before signing.
+- Signing-certificate fingerprint, SBOM, CI (`npm audit`), and build provenance (GitHub attestations).
+- Google Play distribution (Play App Signing) to reduce repackaging risk.
+- Key rotation through a signature chain, without shipping a new APK.
+- Privacy-preserving community reporting of scam hashes, accepted into the pack only after multiple independent reports.
+- Curated real-world scam-hash corpus and calibration of ELA/dHash thresholds with a documented test set.
+- AI-generated image detection using a validated pretrained model, and model compression for lighter on-device processing.
+- Physical-device testing of the Android APK.
 
 ## 🔒 Security & Privacy
 
 - Core analysis runs fully offline with bundled data. The app can optionally download a public, signed data file and uses it only if the signature is valid.
 - Qerity never sends images, lender names, or scan history.
+- The optional update check sends two plain GET requests with no parameters or custom data; the file host can see the device IP address and request timing. It runs at most once per 24 hours and can be switched off.
 - **No accounts, no login.** There is no user registration, authentication, or server-side user data.
 - Images are processed temporarily on the device and are not stored by the app. Opt-in scan history stores metadata locally.
 - **Local-only storage.** Scan history is written to `AsyncStorage` on the device and is not transmitted.
