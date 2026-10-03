@@ -96,6 +96,9 @@ qerity/
 ├── package-lock.json               # npm dependency lockfile
 ├── .gitignore                      # Local files/folders excluded from Git
 ├── .gitattributes                  # Keeps publish/ bytes unchanged so pack signatures stay valid
+├── .github/
+│   ├── workflows/ci.yml            # CI: npm ci, pack tests, npm audit report, CycloneDX SBOM
+│   └── dependabot.yml              # Weekly dependency and GitHub Actions update proposals
 ├── SECURITY.md                     # Threat model and security roadmap
 ├── assets/
 │   ├── elaHtml.js                  # WebView HTML/JS: Error Level Analysis + perceptual dHash
@@ -265,7 +268,19 @@ macOS / Linux:
 shasum -a 256 qerity-v2.apk
 ```
 
-If the hash does not match, do not install the file. The same hash is published in the release notes. A matching hash shows the file is identical to the one we released; it is not a substitute for installing from a trusted source.
+Signing certificate SHA-256 (official Qerity APKs should show this value):
+
+`4cf678e76265efef3227a3afc25ca4072a0414db00ba6a7095d00098839bbc55`
+
+Check it with the Android SDK build-tools:
+
+```bash
+apksigner verify --print-certs qerity-v2.apk
+```
+
+A modified or re-signed APK will show a different certificate fingerprint. If either value does not match, do not install the file. Both values are also published in the release notes, which also include `sbom.json` (CycloneDX software bill of materials for the production dependencies).
+
+These checks only help people who actually perform them. They detect a modified APK; they do not prevent one from being distributed elsewhere. See threat T5 in [SECURITY.md](SECURITY.md).
 
 ### Troubleshooting
 
@@ -373,7 +388,8 @@ A valid signature proves the pack came from the maintainer's key; it does not pr
 - All analysis results are **probabilistic signals**, not certainty.
 - ELA and duplicate matching thresholds are **heuristics** and require calibration with real test data.
 - The **OJK legality snapshot can change**; new entities, revoked entities, or renamed entities are not automatically reflected.
-- **APK distribution risk (threat T5):** the APK is distributed outside Google Play, so a third party could repackage it. We publish its SHA-256 hash; certificate fingerprint, SBOM, build provenance, and Play distribution are planned. See [SECURITY.md](SECURITY.md).
+- **APK distribution risk (threat T5):** the APK is distributed outside Google Play, so a third party could repackage it and replace the embedded public key. We publish the APK SHA-256, the signing-certificate fingerprint, and an SBOM, so a modified APK can be detected by users who check. There is no automatic detection, and most users will not check. Google Play distribution and build provenance are planned. See [SECURITY.md](SECURITY.md).
+- `npm audit` reports findings (braces, node-forge, uuid) that are reachable only through Expo build tooling, not through the app's runtime code. The suggested forced fix would downgrade Expo to an incompatible major version and was not applied. Details are in [SECURITY.md](SECURITY.md).
 - The data pack is hosted on GitHub; the host can observe the device IP address and request time. This can be disabled in the About screen.
 - The app **does not use user accounts or login**; scan history is stored locally per device and is not synced or backed up.
 - **iOS builds were not tested as standalone apps**; development and testing were done exclusively through Expo Go, since the team primarily uses iOS devices.
@@ -382,8 +398,8 @@ A valid signature proves the pack came from the maintainer's key; it does not pr
 ## 🗺️ Roadmap / Future Work
 
 - Scheduled data pack refresh from an official OJK source, with human review before signing.
-- Signing-certificate fingerprint, SBOM, CI (`npm audit`), and build provenance (GitHub attestations).
-- Google Play distribution (Play App Signing) to reduce repackaging risk.
+- Build provenance (GitHub artifact attestations) and making `npm audit` a gating CI check once findings are triaged.
+- Google Play distribution (Play App Signing), the only real mitigation for repackaged APKs.
 - Key rotation through a signature chain, without shipping a new APK.
 - Privacy-preserving community reporting of scam hashes, accepted into the pack only after multiple independent reports.
 - Curated real-world scam-hash corpus and calibration of ELA/dHash thresholds with a documented test set.
@@ -396,6 +412,7 @@ A valid signature proves the pack came from the maintainer's key; it does not pr
 - Qerity never sends images, lender names, or scan history.
 - The optional update check sends two plain GET requests with no parameters or custom data; the file host can see the device IP address and request timing. It runs at most once per 24 hours and can be switched off.
 - **No accounts, no login.** There is no user registration, authentication, or server-side user data.
+- **Release integrity:** each release publishes the APK SHA-256, the signing-certificate fingerprint, and a CycloneDX SBOM. Dependencies are installed from the lockfile (`npm ci`), and CI runs the pack tests and an `npm audit` report on every push.
 - Images are processed temporarily on the device and are not stored by the app. Opt-in scan history stores metadata locally.
 - **Local-only storage.** Scan history is written to `AsyncStorage` on the device and is not transmitted.
 - **No analytics or tracking.** The app does not integrate third-party analytics, crash reporting, or advertising SDKs.
