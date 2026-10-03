@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "version": 1,
-  "issuedAt": "2026-10-02T23:38:27.986Z",
-  "expiresAt": "2026-12-31T23:38:27.997Z",
+  "version": 2,
+  "issuedAt": "2026-10-03T00:02:13.266Z",
+  "expiresAt": "2027-01-01T00:02:13.266Z",
   "source": {
     "name": "OJK licensed lender list (secondary source)",
-    "snapshotDate": "2026-10-02",
-    "note": ""
+    "snapshotDate": "2026-07-01",
+    "note": "July 2026 snapshot from a secondary source, not fetched from ojk.go.id"
   },
   "ojk": [
     {
